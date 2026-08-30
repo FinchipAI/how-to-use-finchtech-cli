@@ -1,0 +1,65 @@
+# Inputs: The public Finch main branch and this repository's current distribution files.
+# Outputs: Hourly or manually requested mirror commits containing the canonical Finch Market Skill.
+# Role: Pulls the reviewed Skill into its public repository using only this repository's scoped GitHub token.
+
+name: Sync from Finch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-from-finch-main
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync canonical Finch Market Skill
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out public Skill repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: public-skill
+
+      - name: Check out canonical Finch source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: FinchipAI/Finch-Site
+          ref: main
+          path: finch-site
+          persist-credentials: false
+
+      - name: Mirror reviewed Skill files
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_dir='finch-site/.agents/skills/finch-market'
+          if [[ ! -f "$source_dir/README.md" ]]; then
+            echo 'Canonical main has not enabled public Skill synchronization yet.'
+            exit 0
+          fi
+          test -f "$source_dir/SKILL.md"
+          test -f "$source_dir/agents/openai.yaml"
+          source_sha="$(git -C finch-site rev-parse HEAD)"
+          rsync -a --delete \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.gitattributes' \
+            --exclude 'LICENSE' \
+            "$source_dir/" public-skill/
+          cd public-skill
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo 'Public Finch Market Skill is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          git commit -m "sync: Finch Market Skill from ${source_sha}"
+          git push origin HEAD:main
