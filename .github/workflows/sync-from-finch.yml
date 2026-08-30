@@ -6,8 +6,6 @@ name: Sync from Finch
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 * * * *'
 
 permissions:
   contents: write
@@ -22,6 +20,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
+      - name: Require private-source credential
+        shell: bash
+        env:
+          FINCH_SOURCE_TOKEN: ${{ secrets.FINCH_SOURCE_TOKEN }}
+        run: |
+          if [[ -z "$FINCH_SOURCE_TOKEN" ]]; then
+            echo '::error::Set FINCH_SOURCE_TOKEN to a fine-grained token with read-only Contents access to FinchipAI/Finch-Site before running this manual sync.'
+            exit 1
+          fi
+
       - name: Check out public Skill repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,6 +41,7 @@ jobs:
           repository: FinchipAI/Finch-Site
           ref: main
           path: finch-site
+          token: ${{ secrets.FINCH_SOURCE_TOKEN }}
           persist-credentials: false
 
       - name: Mirror reviewed Skill files

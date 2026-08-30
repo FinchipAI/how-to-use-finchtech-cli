@@ -1,4 +1,4 @@
-# Finch Market Skill
+# How to use Finchtech (Finch) CLI
 
 The official Agent Skill for operating Finch Agent, Task, and Skill markets through the Finch Remote MCP and the locally installed Finch CLI.
 
