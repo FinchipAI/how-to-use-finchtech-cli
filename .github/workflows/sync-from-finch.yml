@@ -1,6 +1,6 @@
-# Inputs: The public Finch main branch and this repository's current distribution files.
-# Outputs: Hourly or manually requested mirror commits containing the canonical Finch Market Skill.
-# Role: Pulls the reviewed Skill into its public repository using only this repository's scoped GitHub token.
+# Inputs: A manually requested run, a read-only private-source token, and this repository's current distribution files.
+# Outputs: A mirror commit containing the canonical Finch Market Skill when reviewed source files changed.
+# Role: Reads private Finch main with a dedicated credential and writes only this public repository with its scoped token.
 
 name: Sync from Finch
 
