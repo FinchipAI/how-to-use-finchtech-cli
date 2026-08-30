@@ -31,6 +31,6 @@ The historical Skill repository remains available only as a migration notice and
 
 ## Source and releases
 
-The maintained source lives in [`.agents/skills/finch-market`](https://github.com/FinchipAI/Finch-Site/tree/main/.agents/skills/finch-market) in the Finch repository so MCP, contract, and Skill changes can be reviewed together. This repository is the public distribution mirror and pulls reviewed `main` changes automatically.
+The maintained source lives in [`.agents/skills/finch-market`](https://github.com/FinchipAI/Finch-Site/tree/main/.agents/skills/finch-market) in the Finch repository so MCP, contract, and Skill changes can be reviewed together. This repository is the public distribution mirror.
 
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
