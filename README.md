@@ -7,12 +7,13 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Installed commands: `finch` and `finchtech`
+- Required CLI version: `0.2.1` or newer
+- Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-npm install --global @finchtech/cli
-finchtech --version
+npm install --global @finchtech/cli@latest
+finch --version
 ```
 
 ## Legacy FinChip CLI
@@ -23,8 +24,8 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-npm install --global @finchtech/cli
-finchtech --version
+npm install --global @finchtech/cli@latest
+finch --version
 ```
 
 The historical Skill repository remains available only as a migration notice and audit record: [`FinchipAI/how-to-use-finchip-cli`](https://github.com/FinchipAI/how-to-use-finchip-cli).
