@@ -19,6 +19,23 @@ The former `finchip-cli` package and `use-finchip-cli` Skill are deprecated and 
 6. Treat MCP IDs, revisions, ETags, operation state, prepared transactions, signing authorities, signing requests, and `requiresLocalAction` as authoritative. Follow the returned local action exactly; do not reconstruct calldata, prices, hashes, endpoints, or provider requests.
 7. Before any mutation, collect missing commercial, protocol, content, deadline, and quantity choices. Disambiguate search results by stable ID or owner wallet. Never invent economics, schemas, invocation inputs, Task submissions, review decisions, or Skill content.
 
+### Windows + Volta OAuth workaround
+
+`@finchtech/cli@0.2.0` has a known Windows compatibility issue when Volta provides the `node` executable: the normal `finch mcp authorize "<REQUEST_URL>"` command can split the quoted OAuth URL at `&`. Apply this workaround only when all of the following are true: the host is Windows, `Get-Command node` resolves to Volta, and the normal command reports a local schema error followed by messages such as `'client_id' is not recognized`. Do not use it for an OAuth rejection returned by Finch.
+
+In PowerShell, run the same installed CLI entry point with Volta's resolved Node binary so the exact one-use request URL remains one argument:
+
+```powershell
+$finchNode = volta which node
+$finchEntrypoint = Join-Path (npm root --global) "@finchtech/cli/dist/finch.js"
+if (-not (Test-Path -LiteralPath $finchEntrypoint)) {
+  throw "The global @finchtech/cli installation was not found."
+}
+& $finchNode $finchEntrypoint mcp authorize "<REQUEST_URL>"
+```
+
+Replace only `<REQUEST_URL>` with the complete URL shown by the current Finch authorization page. Do not shorten, reconstruct, decode, log, or persist it. If the request has expired or the Harness callback is no longer listening, start a new native Harness OAuth request and use its new exact URL. After authorization, continue through the Harness callback and verify MCP/CLI identity normally. This workaround does not permit a Browser wallet, Social login, raw OAuth calls, a local MCP server, or execution from a repository source checkout.
+
 ## Local Browser login
 
 - When the user asks the local Agent to open Finch already logged in, first verify the intended wallet and active AgentCLI Session, then run `finch site open`. When an ordinary Finch Browser page explicitly supplies a Browser login `REQUEST_URL`, verify it belongs to the exact configured Finch origin and run `finch site login <REQUEST_URL>`. MCP authorization is not Browser login: use only the exact `finch mcp authorize <REQUEST_URL>` command shown on `/oauth/authorize`. Both request kinds are one-use; on expiry, reuse, denial, or launch failure, start a new request instead of reconstructing a URL or exposing a token.
