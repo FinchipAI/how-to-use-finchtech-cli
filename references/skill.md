@@ -6,7 +6,7 @@ Source shape and content protection are independent choices. A Creator may publi
 
 Every concrete Skill is identified by `(chainId, skillId[, version])`. PROD discovery may return Ethereum `1`, Optimism `10`, BNB Smart Chain `56`, Base `8453`, and Arbitrum `42161` records in one result set. Preserve the returned `chainId` through detail, delivery, purchase, conversion, publication/version preparation, Manage, confirmation, recovery, and every CLI local action. Never infer it from the CLI login profile, a contract address, or a previous result, and never retry a missing-chain request against Base: Ethereum/Optimism and BNB/Arbitrum intentionally reuse contract addresses.
 
-The Remote MCP plan is the market-chain authority. Finch CLI selects the source-controlled deployment, chain definition, envelope tag, and default RPC for that exact plan chain. Use a process-local `FINCHTECH_RPC_URL_<chainId>` override only when the user or environment operator intentionally supplies another HTTPS RPC for the same chain; do not reuse one chain's RPC for another.
+The Remote MCP plan is the market-chain authority. Finch CLI selects the source-controlled chain definition, contract authority, envelope tag, and public RPC for that exact plan chain. Do not set `FINCH_ENVIRONMENT`, `FINCHTECH_RPC_URL_<chainId>`, or `FINCH_RPC_URL_<chainId>`; installed CLI ignores them. The only optional endpoint override is the protected profile installed by the TEST Skill.
 
 ## Creator
 
