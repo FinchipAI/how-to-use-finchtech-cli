@@ -8,7 +8,7 @@ Use scopes `agent_market:merchant:read`, `agent_market:merchant:write`, and `age
 2. Collect display metadata, HTTPS endpoint maps, methods, timeouts, test inputs, payment token, price, Call Right units, quantity and duration bounds, schemas, Artifact contracts, and AgentOn validation inputs.
 3. For `direct_api_v1`, configure the Direct contract before runtime. Anonymous Direct has no credential setup. Authenticated Direct requires the MCP credential setup and returned `finch credentials fulfill` action before runtime references it.
 4. For `agenton_v2`, create the credential setup first and follow the returned `finch credentials material-download` action into a protected path. Install FCR1 through the merchant's secret manager, then configure runtime, rail, and the required Offers. Map P1/P2/P3 to `conversation_turn`, `task`, and `generation`.
-5. Run a real connection test for each Version. Require Direct health/preflight/invoke or all selected AgentOn modes; generation must complete its real Artifact upload. Do not seed evidence or weaken transport policy.
+5. Run a real connection test for each Version. Require Direct health/preflight/invoke or all selected AgentOn modes; generation must complete its real Artifact upload. If a Direct test fails or is uncertain, call `agent_market_merchant_connection_test_diagnostics_get` with the same `versionId` and `operationId` before changing merchant configuration. Use its stage, HTTP status, stable result code, delivery outcome, and latency to identify the failed boundary; it never returns credentials, provider URLs, schemas, or request/response bodies. Do not seed evidence or weaken transport policy.
 6. Create and approve one publication intent per Version, poll it to success, and re-read the active revision, publication generation, availability, and Offer IDs. Use a retirement intent for an Offer that should no longer accept new work; do not edit history.
 
 ### Creator CLI authority
@@ -33,6 +33,8 @@ finch creator direct-contract show <VERSION_ID>
 ```
 
 Poll only the same preflight or publication operation ID. Do not create a new operation because a read timed out. Use the revisions returned by create/replace calls instead of assuming `1` when updating an existing Version.
+
+HTTP header names are case-insensitive. For authenticated Direct runtimes, `credentialHeaderName` may use conventional casing such as `Authorization`; Finch normalizes it to lowercase before binding the runtime hash and rejects only invalid field names or transport-reserved headers. Prefer the lowercase canonical spelling in saved JSON so diffs and retries remain stable.
 
 `agent.json`:
 
