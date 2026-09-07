@@ -36,6 +36,8 @@ Poll only the same preflight or publication operation ID. Do not create a new op
 
 HTTP header names are case-insensitive. For authenticated Direct runtimes, `credentialHeaderName` may use conventional casing such as `Authorization`; Finch normalizes it to lowercase before binding the runtime hash and rejects only invalid field names or transport-reserved headers. Prefer the lowercase canonical spelling in saved JSON so diffs and retries remain stable.
 
+Creator payment-token input may use canonical lowercase or a valid EIP-55 checksum address. Finch normalizes valid input to lowercase before validating the deployment-authorized token and persisting the contract; malformed mixed-case or all-uppercase addresses are rejected.
+
 `agent.json`:
 
 ```json
