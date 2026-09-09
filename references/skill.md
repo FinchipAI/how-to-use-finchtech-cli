@@ -2,6 +2,16 @@
 
 Source shape and content protection are independent choices. A Creator may publish one file or one directory using `plaintext`, `finchip_v2`, or `lit` when the selected deployment supports that mode. Never substitute a GitHub or arbitrary IPFS URL for a new local package.
 
+## CLI 0.3.0 publication and delivery
+
+Require CLI 0.3.0 or newer before these workflows. Older CLIs cannot publish new-format Skills or use the upgraded encrypted delivery, including for historical encrypted Skills. Updating this Skill alone does not update the CLI.
+
+For a single local `.zip`, request a `file` source plan and pass the ZIP path to the returned `finch skill publish-submit` or `finch skill version-submit` action. The CLI expands it before filtering and primary-Markdown hashing. ZIP files inside a directory remain ordinary assets. Include `SKILL.md`, `README.md`, or one unambiguous root Markdown document with valid UTF-8. Imports accept stored/DEFLATE ZIPs up to 10 MiB compressed and expanded and at most 1024 entries; unsafe paths, symlinks, encrypted ZIPs, ZIP64, conflicts, and corrupt content are rejected. Correct the source rather than bypassing validation.
+
+New Skill identities use a SkillRoot commitment; historical identities retain ZIP-hash updates. Pass the user's optional summary unchanged during preparation; omission means an empty summary. Let the CLI calculate commitments and preserve its uploaded bytes and journal when resuming a publication.
+
+Protected Finch-managed and Lit downloads use Oracle V2 grants sealed to a temporary local device key. Let `finch skill download` perform the request, verification, and local decryption; never request or expose a bare content key. The CLI verifies the SkillRoot and every file, or the historical plaintext ZIP hash, before writing an ordinary ZIP. It retains historical package support. Authorized recipients can still copy decrypted content.
+
 ## Chain identity
 
 Every concrete Skill is identified by `(chainId, skillId[, version])`. PROD discovery may return Ethereum `1`, Optimism `10`, BNB Smart Chain `56`, Base `8453`, and Arbitrum `42161` records in one result set. Preserve the returned `chainId` through detail, delivery, purchase, conversion, publication/version preparation, Manage, confirmation, recovery, and every CLI local action. Never infer it from the CLI login profile, a contract address, or a previous result, and never retry a missing-chain request against Base: Ethereum/Optimism and BNB/Arbitrum intentionally reuse contract addresses.
@@ -12,7 +22,7 @@ The Remote MCP plan is the market-chain authority. Finch CLI selects the source-
 
 Use `skill_market:discover` and `skill_market:creator:write`.
 
-1. Collect a unique slug, name, protocol category, source path, file-or-directory source kind, content mode, license, price, maximum supply, usage limit, optional platform display category, and required public presentation. Do not guess economics or publish a repository root.
+1. Collect a unique slug, name, protocol category, source path, file-or-directory source kind, optional summary (up to 500 characters), content mode, license, price, maximum supply, usage limit, optional platform display category, and required public presentation. Do not guess economics or publish a repository root.
 2. Prepare publication through MCP, call `identity_actor_get`, compare it with `finch status`, and hard stop if Account, wallet, or environment differs. Show the exact custody summary for approval, then run the returned `finch skill publish-submit` action. Packaging, filtering, deterministic ZIP creation, optional encryption, upload, key custody, and chain submission stay local.
 3. Prepare a public cover upload through MCP and run `finch skill asset-upload`; then prepare presentation and run `finch skill presentation-submit`. Presentation may include bounded summary, description, tags, parameters, dependencies, capabilities, compatibility, repository and documentation links, support, release notes, and related public metadata.
 4. Use Manage reads before changing anything. Manage supports platform display category, unit price, maximum supply, public presentation, public HTML documents, and a new file-or-directory version. Use the corresponding MCP preparation and returned `finch` action (`price-submit`, `supply-submit`, `presentation-submit`, or `version-submit`), repeating the MCP/CLI identity comparison before each custody action. Re-read chain, presentation, and document state after each change.
@@ -44,7 +54,7 @@ Use `skill_market:discover` and `skill_market:buyer:write` as needed.
 
 1. Search or list, then inspect the exact Skill ID and version, owner, price, supply, content mode, package hash, presentation, and delivery terms.
 2. Download `plaintext` content through the public delivery plan without purchasing. For protected content, prepare purchase through MCP, call `identity_actor_get`, require exact equality with `finch status`, show the transaction summary for approval, and run the exact `finch skill purchase-submit` action. The command validates `signingAuthority`, broadcasts once, checkpoints the transaction hash before waiting for a receipt, and confirms atomically.
-3. Read delivery through MCP and run `finch skill download` to a new protected output file. Delivery packages use IPFS; pass the authoritative plan unchanged so the CLI verifies the immutable package hash before creating the file.
+3. Read delivery through MCP and run `finch skill download` to a new protected output file. Delivery packages use IPFS; pass the authoritative plan unchanged so the CLI verifies the SkillRoot and every file, or the historical plaintext ZIP hash, before creating the file.
 4. When moving an owned holding to a newer compatible version, prepare conversion through MCP, repeat the identity comparison, and run `finch skill convert-submit`; verify the old/new balances and download the selected version explicitly.
 
 If purchase or conversion times out after broadcast, recover only with `finch skill recover intent <FINGERPRINT>`. Recovery verifies the recorded transaction's sender, recipient, calldata, and value before waiting and confirming; it never broadcasts again. A buyer-intent journal containing a transaction hash can only be recovered, never abandoned or deleted by hand. Do not print or inspect journal secrets; logout and wallet-switch errors expose only the kind, fingerprint, and public recovery command.

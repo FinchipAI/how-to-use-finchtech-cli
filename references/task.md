@@ -24,6 +24,8 @@ In a mounted Finch MCP harness, use `task_market_tasks_list`, `task_market_task_
 4. Read `my_submission` and report its stable participation and submission IDs. Do not self-approve or infer an award.
 5. After requester review, re-read the submission and Task; distinguish approved, rejected, pending, and paid states.
 
+When X verification returns `manual_review` with `x_daily_credit_limit_exceeded` or `x_credit_budget_unavailable`, report that requester review is required. Web and MCP share the daily budget; changing clients or retrying does not bypass it. Respect returned retry limits for each goal. A manual verification decision is separate from reward settlement; use the requester review and award flow only for the user's explicit decision.
+
 Keep a Task's publication, participant mutation, review, and reclaim idempotency keys separate. A delayed response is not permission to create a second Task, submission, or award. Recover an irreversible requester action only with `finch task recover <TASK_ID> <KIND>`, where `KIND` is exactly `publish`, `award`, or `reclaim` as reported by the journal. The command reuses the recorded hash or signature batch and idempotency key; it does not need the original preparation file. A journal containing a hash or signatures can only be recovered, never abandoned or deleted by hand.
 
 An end-to-end Task validation requires two isolated actors: requester A publishes and later reviews/awards; participant B joins and submits. Each actor must have its own Account, wallet, OAuth authorization, Finch home, and clean context.
