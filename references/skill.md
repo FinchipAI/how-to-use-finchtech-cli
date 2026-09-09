@@ -2,15 +2,21 @@
 
 Source shape and content protection are independent choices. A Creator may publish one file or one directory using `plaintext`, `finchip_v2`, or `lit` when the selected deployment supports that mode. Never substitute a GitHub or arbitrary IPFS URL for a new local package.
 
-## CLI 0.3.0 publication and delivery
+## CLI 0.3.1 publication and delivery
 
-Require CLI 0.3.0 or newer before these workflows. Older CLIs cannot publish new-format Skills or use the upgraded encrypted delivery, including for historical encrypted Skills. Updating this Skill alone does not update the CLI.
+Require CLI 0.3.1 or newer before these workflows. Older CLIs cannot publish new-format Skills or use the upgraded encrypted delivery, including for historical encrypted Skills. Updating this Skill alone does not update the CLI.
 
 For a single local `.zip`, request a `file` source plan and pass the ZIP path to the returned `finch skill publish-submit` or `finch skill version-submit` action. The CLI expands it before filtering and primary-Markdown hashing. ZIP files inside a directory remain ordinary assets. Include `SKILL.md`, `README.md`, or one unambiguous root Markdown document with valid UTF-8. Imports accept stored/DEFLATE ZIPs up to 10 MiB compressed and expanded and at most 1024 entries; unsafe paths, symlinks, encrypted ZIPs, ZIP64, conflicts, and corrupt content are rejected. Correct the source rather than bypassing validation.
 
 New Skill identities use a SkillRoot commitment; historical identities retain ZIP-hash updates. Pass the user's optional summary unchanged during preparation; omission means an empty summary. Let the CLI calculate commitments and preserve its uploaded bytes and journal when resuming a publication.
 
 Protected Finch-managed and Lit downloads use Oracle V2 grants sealed to a temporary local device key. Let `finch skill download` perform the request, verification, and local decryption; never request or expose a bare content key. The CLI verifies the SkillRoot and every file, or the historical plaintext ZIP hash, before writing an ordinary ZIP. It retains historical package support. Authorized recipients can still copy decrypted content.
+
+## Search continuation and fresh publication signatures
+
+Pass the returned `nextCursor` unchanged to `finch skill search --cursor`, retaining the same filters. Treat cursors as opaque strings, never integers. Restart from page one after a stale or filter-mismatched cursor; CLI 0.3.1 and Remote MCP advertise the required search capability automatically.
+
+Finch-managed publication key requests carry a signed timestamp and are consumed once. If a request expires or was used, sign a fresh request through the updated CLI; never replay the old signature. Keep any existing transaction or publication journal and follow its typed recovery path. Lit publication is unchanged.
 
 ## Chain identity
 
