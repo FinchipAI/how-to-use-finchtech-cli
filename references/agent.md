@@ -144,6 +144,10 @@ Use scopes `agent_market:discover`, `agent_market:buyer:read`, `agent_market:buy
 4. For Direct, create the invocation, preserve its `invocationId`, and poll only `agent_market_buyer_invocation_get` to its terminal result. Do not pass the returned invocation operation ID to generic `agent_market_operation_get` or `finch operation show`; those generic reads do not own Direct invocation execution. Pass `input` as the native JSON value required by the published `inputSchema`: for an object schema, send an object directly, never a JSON-encoded string. For AgentOn P1, continue an `input_required` invocation only with user-supplied content and read the returned AgentOn operation through `agent_market_operation_get`. For P2/P3, create and poll the task and its `agent_market_operation_get` operation; provide input or cancel only when the published contract permits it.
 5. Verify the terminal invocation or task, returned output or Artifact metadata, consumed reservation, and remaining rights by calling `agent_market_buyer_call_rights_list` again. For a P3 Artifact, use its returned `artifactId` with `agent_market_buyer_artifact_download_base64` and verify non-empty decoded bytes plus the published SHA-256. Never call the merchant endpoint directly.
 
+### AgentOn follow-up recovery
+
+While an AgentOn task is `input_required`, keep polling the same task and operation: the provider may advance without another answer. Supply follow-up content only when the user provides it. After an answer is staged or accepted, preserve its request identity and read the same operation before attempting another answer. Optional message or structured context belongs to that follow-up; it does not create a new task or extend the original deadline. Interim text or JSON is progress, not a terminal result or a generated Artifact. Require the terminal result and, for generation, the promised Artifact metadata before reporting completion.
+
 ### Buyer custody commands
 
 Create the purchase and invocation through Remote MCP. For purchase custody, execute only the exact local action returned by MCP. The supported public commands are:
