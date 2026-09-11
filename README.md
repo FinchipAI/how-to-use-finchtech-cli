@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.1` or newer
+- Required CLI version: `0.3.2` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.1
+pnpm add --global @finchtech/cli@0.3.2
 finch --version
 ```
 
@@ -26,7 +26,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.1
+pnpm add --global @finchtech/cli@0.3.2
 finch --version
 ```
 
@@ -37,3 +37,5 @@ The historical Skill repository remains available only as a migration notice and
 The maintained source lives in [`.agents/skills/finch-market`](https://github.com/FinchipAI/Finch-Site/tree/main/.agents/skills/finch-market) in the Finch repository so MCP, contract, and Skill changes can be reviewed together. The public distribution mirror is [`FinchipAI/how-to-use-finchtech-cli`](https://github.com/FinchipAI/how-to-use-finchtech-cli).
 
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
+
+CLI 0.3.2 adds publication source/size diagnostics and safe recovery state. Use 0.3.2 or newer for the diagnostic and recovery guidance in this release. Updating this Skill does not upgrade the installed CLI.

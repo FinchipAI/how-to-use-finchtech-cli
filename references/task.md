@@ -33,3 +33,9 @@ Task join and submit may also be restricted by current operator controls, indepe
 Keep a Task's publication, participant mutation, review, and reclaim idempotency keys separate. A delayed response is not permission to create a second Task, submission, or award. Recover an irreversible requester action only with `finch task recover <TASK_ID> <KIND>`, where `KIND` is exactly `publish`, `award`, or `reclaim` as reported by the journal. The command reuses the recorded hash or signature batch and idempotency key; it does not need the original preparation file. A journal containing a hash or signatures can only be recovered, never abandoned or deleted by hand.
 
 An end-to-end Task validation requires two isolated actors: requester A publishes and later reviews/awards; participant B joins and submits. Each actor must have its own Account, wallet, OAuth authorization, Finch home, and clean context.
+
+## X and Telegram evidence
+
+For an original X post or Quote Tweet, submit the participant's exact post URL; validation checks that post's author and the Task requirements, including the quoted target. Native Retweet uses the bound account and scans at most one page of 20 recent results within two hours; older activity or missing results may not be verifiable. Do not claim that an arbitrary historical retweet is guaranteed to qualify.
+
+Telegram participation uses a screenshot URL submitted as evidence for requester review. It is not automatic group-membership verification. Collect real user-provided evidence and never fabricate a screenshot or claim a successful membership check.

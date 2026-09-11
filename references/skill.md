@@ -66,3 +66,9 @@ Use `skill_market:discover` and `skill_market:buyer:write` as needed.
 If purchase or conversion times out after broadcast, recover only with `finch skill recover intent <FINGERPRINT>`. Recovery verifies the recorded transaction's sender, recipient, calldata, and value before waiting and confirming; it never broadcasts again. A buyer-intent journal containing a transaction hash can only be recovered, never abandoned or deleted by hand. Do not print or inspect journal secrets; logout and wallet-switch errors expose only the kind, fingerprint, and public recovery command.
 
 Skill catalog and holdings are chain-authoritative, while projected search may converge after a confirmed transaction. Never treat an older search projection as permission to override the current chain-authoritative detail.
+
+## Publication diagnostics (CLI 0.3.2+)
+
+Parse the JSON string in `error.state` for source diagnostics (`SKILL_SOURCE_SYMLINK_UNSUPPORTED`, `SKILL_SOURCE_UNREADABLE`) and final upload size (`SKILL_UPLOAD_SIZE_INVALID`, `actualBytes`, `maxBytes`). Paths are relative to the selected source. The final upload includes metadata and encryption overhead; the limit is 10 MiB. Correct the source rather than bypassing validation.
+
+Publication failures set `retryable: false` and report `phase`, `fingerprint`, `transactionHashes`, `submissionStatus`, and `recoveryCommand`. `not_attempted` describes this invocation, not all previous attempts. `hash_known` identifies recorded hashes. For `uncertain`, contact support before retrying or recovering, even if a hash exists. Only use a non-null returned recovery command after rechecking CLI/MCP identity; do not repeat publish-submit or infer a command when none is supplied. Fingerprint-only recovery may reuse stored publication bytes when the source is unavailable. Never print journals or credentials.

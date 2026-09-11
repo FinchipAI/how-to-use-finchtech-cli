@@ -42,3 +42,5 @@ Read only the reference needed for the selected market:
 - Stop on an authorization, signing-authority, payment, contract, data-integrity, or irreversible-state inconsistency. Explain the last confirmed stage and the exact safe recovery command instead of trying a different credential, wallet, endpoint, or idempotency key. If logout or wallet switching reports a blocking transaction or publication journal, recover that journal before retrying the Account transition. Do not delete wallet material or an in-flight recovery journal. If only Session/Grant metadata is invalid and the documented logout path cannot parse it, report that CLI recovery defect instead of claiming that all local state is undeletable.
 
 Do not browse source code, change deployment configuration, or use operator-only infrastructure merely to complete an ordinary marketplace operation.
+
+CLI 0.3.2 adds publication source/size diagnostics and safe recovery state. Use 0.3.2 or newer for the diagnostic and recovery guidance in this release. Updating this Skill does not upgrade the installed CLI.
