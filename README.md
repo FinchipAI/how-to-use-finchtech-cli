@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.2` or newer
+- Required CLI version: `0.3.3` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.2
+pnpm add --global @finchtech/cli@0.3.3
 finch --version
 ```
 
@@ -26,7 +26,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.2
+pnpm add --global @finchtech/cli@0.3.3
 finch --version
 ```
 
@@ -38,4 +38,6 @@ The maintained source lives in [`.agents/skills/finch-market`](https://github.co
 
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
 
-CLI 0.3.2 adds publication source/size diagnostics and safe recovery state. Use 0.3.2 or newer for the diagnostic and recovery guidance in this release. Updating this Skill does not upgrade the installed CLI.
+CLI 0.3.3 includes final multipart upload limits (warning above 4,000,000 bytes, rejection above 4,500,000), journal v6 recovery guards, and detailed ZIP/intent errors. The 10 MiB source ZIP import limit is a separate check. Follow [publication diagnostics and recovery](references/skill.md#publication-diagnostics-and-recovery-cli-033) before retrying a failed publication.
+
+`finch mcp doctor` checks the CLI Session and MCP discovery, not the Harness's OAuth credentials. Its `harnessOAuth.status` is `not_checked`; compare the connected MCP identity with `finch status` and use native Harness reauthorization when needed. This release does not claim to fix production intent availability, manifest availability or OAuth persistence. Updating this Skill does not upgrade the installed CLI.
