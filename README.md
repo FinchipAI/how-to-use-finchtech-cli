@@ -34,7 +34,7 @@ The historical Skill repository remains available only as a migration notice and
 
 ## Source and releases
 
-The maintained source lives in [`.agents/skills/finch-market`](https://github.com/FinchipAI/Finch-Site/tree/main/.agents/skills/finch-market) in the Finch repository so MCP, contract, and Skill changes can be reviewed together. The public distribution mirror is [`FinchipAI/how-to-use-finchtech-cli`](https://github.com/FinchipAI/how-to-use-finchtech-cli).
+The public Skill repository is [`FinchipAI/how-to-use-finchtech-cli`](https://github.com/FinchipAI/how-to-use-finchtech-cli). Read the instructions and references here, and find versioned downloads under [Releases](https://github.com/FinchipAI/how-to-use-finchtech-cli/releases). The canonical source is maintained internally alongside Finch's MCP and contract code; using this Skill requires no access to the private repository.
 
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
 
