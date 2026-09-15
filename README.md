@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.3` or newer
+- Required CLI version: `0.3.4` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.3
+pnpm add --global @finchtech/cli@0.3.4
 finch --version
 ```
 
@@ -26,7 +26,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.3
+pnpm add --global @finchtech/cli@0.3.4
 finch --version
 ```
 
@@ -41,3 +41,11 @@ Tagged releases in this repository version the Skill independently from `@fincht
 CLI 0.3.3 includes final multipart upload limits (warning above 4,000,000 bytes, rejection above 4,500,000), journal v6 recovery guards, and detailed ZIP/intent errors. The 10 MiB source ZIP import limit is a separate check. Follow [publication diagnostics and recovery](references/skill.md#publication-diagnostics-and-recovery-cli-033) before retrying a failed publication.
 
 `finch mcp doctor` checks the CLI Session and MCP discovery, not the Harness's OAuth credentials. Its `harnessOAuth.status` is `not_checked`; compare the connected MCP identity with `finch status` and use native Harness reauthorization when needed. This release does not claim to fix production intent availability, manifest availability or OAuth persistence. Updating this Skill does not upgrade the installed CLI.
+
+## First wallet and partial diagnostics (CLI 0.3.4+)
+
+To keep an existing identity on a fresh installation, use `finch wallet use --file <PATH>` with an owner-only file containing the existing private key. Import is offline; never paste the key into a command or chat. Creating a new wallet creates a different identity and requires an explicit choice. Import is blocked when wallet files are damaged, local authorization remains, or recovery is pending. Restore damaged wallet files from backup. For orphaned authorization, restore the original wallet or explicitly use `finch logout --local`; never delete transaction journals to bypass recovery. Existing Account switching requires login and successful remote revocation before changing the current wallet.
+
+Run `finch login --help` to read production authentication-chain IDs (1, 10, 56, 8453, 42161). For example, `finch login --chain-id 56` selects an authentication chain only; the server validates support and market plans determine transaction chains.
+
+`finch mcp doctor` reports `checks.endpoint`, `wallet`, `session`, `remoteSession`, and `mcpDiscovery`, each with `ok`, `missing`, `invalid`, `unavailable`, or `skipped`. Read the JSON even when exit code is 2: `ready: false` includes actionable guidance. Missing local state does not prevent independent discovery; invalid endpoint configuration prevents network checks. Exit code 0 means the required checks passed, within `cli_session_and_mcp_discovery` only. Harness OAuth remains `not_checked`; verify the mounted MCP identity with `identity_actor_get` against `finch status`. CLI 0.3.4 also rejects malformed OAuth UUID responses rather than silently accepting them.
