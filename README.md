@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.4` or newer
+- Required CLI version: `0.3.5` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.4
+pnpm add --global @finchtech/cli@0.3.5
 finch --version
 ```
 
@@ -26,7 +26,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.4
+pnpm add --global @finchtech/cli@0.3.5
 finch --version
 ```
 
@@ -49,3 +49,7 @@ To keep an existing identity on a fresh installation, use `finch wallet use --fi
 Run `finch login --help` to read production authentication-chain IDs (1, 10, 56, 8453, 42161). For example, `finch login --chain-id 56` selects an authentication chain only; the server validates support and market plans determine transaction chains.
 
 `finch mcp doctor` reports `checks.endpoint`, `wallet`, `session`, `remoteSession`, and `mcpDiscovery`, each with `ok`, `missing`, `invalid`, `unavailable`, or `skipped`. Read the JSON even when exit code is 2: `ready: false` includes actionable guidance. Missing local state does not prevent independent discovery; invalid endpoint configuration prevents network checks. Exit code 0 means the required checks passed, within `cli_session_and_mcp_discovery` only. Harness OAuth remains `not_checked`; verify the mounted MCP identity with `identity_actor_get` against `finch status`. CLI 0.3.4 also rejects malformed OAuth UUID responses rather than silently accepting them.
+
+## WebP image detection (CLI 0.3.5+)
+
+CLI 0.3.5 fixes valid WebP covers and packaged detail images being rejected when binary file-size bytes were decoded as UTF-8. Upgrade the installed CLI to receive the local detection fix; website or Skill updates alone do not update the executable. Image types, size limits, and publication recovery rules are unchanged.
