@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.5` or newer
+- Required CLI version: `0.3.6` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.5
+pnpm add --global @finchtech/cli@0.3.6
 finch --version
 ```
 
@@ -26,7 +26,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.5
+pnpm add --global @finchtech/cli@0.3.6
 finch --version
 ```
 
@@ -53,3 +53,7 @@ Run `finch login --help` to read production authentication-chain IDs (1, 10, 56,
 ## WebP image detection (CLI 0.3.5+)
 
 CLI 0.3.5 fixes valid WebP covers and packaged detail images being rejected when binary file-size bytes were decoded as UTF-8. Upgrade the installed CLI to receive the local detection fix; website or Skill updates alone do not update the executable. Image types, size limits, and publication recovery rules are unchanged.
+
+## Market category compatibility (CLI 0.3.6+)
+
+Use CLI 0.3.6 or newer for the expanded market categories. Skill response display categories now accept bounded text, so future taxonomy additions do not require another CLI upgrade. Updating the website or this Skill does not upgrade an installed CLI.

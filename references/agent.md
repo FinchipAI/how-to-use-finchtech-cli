@@ -11,6 +11,28 @@ Use scopes `agent_market:merchant:read`, `agent_market:merchant:write`, and `age
 5. Run a real connection test for each Version. Require Direct health/preflight/invoke or all selected AgentOn modes; generation must complete its real Artifact upload. If a Direct test fails or is uncertain, call `agent_market_merchant_connection_test_diagnostics_get` with the same `versionId` and `operationId` before changing merchant configuration. Use its stage, HTTP status, stable result code, delivery outcome, and latency to identify the failed boundary; it never returns credentials, provider URLs, schemas, or request/response bodies. Do not seed evidence or weaken transport policy.
 6. Create and approve one publication intent per Version, poll it to success, and re-read the active revision, publication generation, availability, and Offer IDs. Use a retirement intent for an Offer that should no longer accept new work; do not edit history.
 
+### Listing languages through Remote MCP
+
+Use the mounted tools and their current input schemas. `agent_market_merchant_agent_create_with_initial_version` and `agent_market_merchant_version_create_additional` accept optional `localization` alongside the existing creation fields. `agent_market_merchant_listing_replace` saves a complete Agent listing for either `agenton_v2` or `direct_api_v1`, including localized `deliverable` and `serviceBoundary`. The existing Offer create/replace tools accept `localization` alongside the Offer's name, description and commercial configuration. Read the current revision before editing and retain one idempotency key for retries of an identical request.
+
+Supply `localization` inside the tool's request body, for example:
+
+```json
+{
+  "inputLocales": ["en", "zh-TW"],
+  "translations": {
+    "en": { "name": "Research assistant", "description": "Produces research reports." },
+    "zh-TW": { "name": "研究助理", "description": "整理資料並產生研究報告。" }
+  }
+}
+```
+
+Select only languages the merchant actually supplied: `en`, `zh` (Simplified Chinese), or `zh-TW` (Traditional Chinese). Supply complete text for every selected language. One selected language queues translation into the other two; two or three preserve the supplied text without generating another language. Never label machine-generated text as merchant-authored.
+
+The primary language is the first selected language in the fixed order `en`, `zh`, `zh-TW`. Its `name` and `description` must match the request's `displayName` and `description`; on complete listing edits its `deliverable` and `serviceBoundary` must also match the corresponding source fields. Initial creation and Offers use name/description only. Language text and the listing save together; do not call a second localization endpoint. Omitting `localization` preserves translations when the source is unchanged; new or changed sources without language input become eligible for automatic translation at review/publication.
+
+Use the CLI for wallet/session setup, protected credentials, signing and chain actions returned by these operations.
+
 ### Creator CLI authority
 
 Use `finch <topic> --help` when exact syntax is needed. Treat its returned `usage` as authoritative. Do not inspect the executable, installed package, bundle, source map, or package-manager store.
