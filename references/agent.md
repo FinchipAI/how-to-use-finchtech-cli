@@ -9,7 +9,7 @@ Use scopes `agent_market:merchant:read`, `agent_market:merchant:write`, and `age
 3. For `direct_api_v1`, configure the Direct contract before runtime. Anonymous Direct has no credential setup. Authenticated Direct requires the MCP credential setup and returned `finch credentials fulfill` action before runtime references it.
 4. For `agenton_v2`, create the credential setup first and follow the returned `finch credentials material-download` action into a protected path. Install FCR1 through the merchant's secret manager, then configure runtime, rail, and the required Offers. Map P1/P2/P3 to `conversation_turn`, `task`, and `generation`.
 5. Run a real connection test for each Version. Require Direct health/preflight/invoke or all selected AgentOn modes; generation must complete its real Artifact upload. If a Direct test fails or is uncertain, call `agent_market_merchant_connection_test_diagnostics_get` with the same `versionId` and `operationId` before changing merchant configuration. Use its stage, HTTP status, stable result code, delivery outcome, and latency to identify the failed boundary; it never returns credentials, provider URLs, schemas, or request/response bodies. Do not seed evidence or weaken transport policy.
-6. Create and approve one publication intent per Version, poll it to success, and re-read the active revision, publication generation, availability, and Offer IDs. Use a retirement intent for an Offer that should no longer accept new work; do not edit history.
+6. Collect the publication review choice before creating an intent. `reviewRequired` defaults to true when omitted: the exact approved Version enters platform review and is not public until accepted; review does not guarantee recommendation. An explicitly chosen false permits direct activation after the same connection tests, safety checks and wallet approval. The choice is bound to that operation; preserve it during signing recovery. Poll the operation and re-read the authoritative Version, generation, availability and Offer IDs, distinguishing submitted-for-review from active publication. Use a retirement intent for an Offer that should no longer accept new work; do not edit history.
 
 ### Listing languages through Remote MCP
 
@@ -32,6 +32,8 @@ Select only languages the merchant actually supplied: `en`, `zh` (Simplified Chi
 The primary language is the first selected language in the fixed order `en`, `zh`, `zh-TW`. Its `name` and `description` must match the request's `displayName` and `description`; on complete listing edits its `deliverable` and `serviceBoundary` must also match the corresponding source fields. Initial creation and Offers use name/description only. Language text and the listing save together; do not call a second localization endpoint. Omitting `localization` preserves translations when the source is unchanged; new or changed sources without language input become eligible for automatic translation at review/publication.
 
 Use the CLI for wallet/session setup, protected credentials, signing and chain actions returned by these operations.
+
+Preserve supplied Agent/Offer Unicode text, tabs, line breaks and surrounding whitespace verbatim. Limits count Unicode code points, not UTF-8 bytes or visual grapheme clusters; compound emoji can count as several characters. Respect each field's current schema limit. Correct U+0000, malformed surrogate input or the field named by a validation error without silently rewriting the rest of the copy.
 
 ### Creator CLI authority
 

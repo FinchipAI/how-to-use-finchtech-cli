@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.6` or newer
+- Required CLI version: `0.3.7` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.6
+pnpm add --global @finchtech/cli@0.3.7
 finch --version
 ```
 
@@ -26,7 +26,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.6
+pnpm add --global @finchtech/cli@0.3.7
 finch --version
 ```
 
@@ -38,7 +38,7 @@ The public Skill repository is [`FinchipAI/how-to-use-finchtech-cli`](https://gi
 
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
 
-CLI 0.3.3 includes final multipart upload limits (warning above 4,000,000 bytes, rejection above 4,500,000), journal v6 recovery guards, and detailed ZIP/intent errors. The 10 MiB source ZIP import limit is a separate check. Follow [publication diagnostics and recovery](references/skill.md#publication-diagnostics-and-recovery-cli-033) before retrying a failed publication.
+CLI 0.3.7 automatically stages multipart uploads above 4,000,000 bytes and shares a 30 MiB final package limit across upload and download. It reads manifests with authorized external media and reports publication, presentation and legacy-recovery progress. Browser publishing retains its multipart limit and rejects external media. Follow [publication diagnostics and recovery](references/skill.md#publication-diagnostics-and-recovery-cli-037) before retrying; source ZIP limits do not include final metadata or encryption overhead.
 
 `finch mcp doctor` checks the CLI Session and MCP discovery, not the Harness's OAuth credentials. Its `harnessOAuth.status` is `not_checked`; compare the connected MCP identity with `finch status` and use native Harness reauthorization when needed. This release does not claim to fix production intent availability, manifest availability or OAuth persistence. Updating this Skill does not upgrade the installed CLI.
 

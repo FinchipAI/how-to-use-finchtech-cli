@@ -12,6 +12,12 @@ In a mounted Finch MCP harness, use these exact requester tools to create and pr
 4. Read the review board. For each user-authorized decision, prepare review through MCP, repeat the MCP/CLI identity comparison, show the award summary, and run `finch task award-sign`. The command records one EIP-712 signature batch and confirms review atomically; the runtime broadcasts the award. Do not create another signature batch after an unknown response. Verify approved submission, participation, award operation, fee, and remaining pool.
 5. Reclaim only when the user explicitly requests it and the Task is eligible: prepare through MCP, repeat the identity comparison, show the transaction summary, and run `finch task reclaim-submit`. It broadcasts once, checkpoints the hash, and confirms atomically. Do not close or reclaim a Task merely to clean up a run.
 
+### Expired requester award reservations
+
+For an explicit requester cancellation, use the mounted `task_market_task_prepare_review` with `action: "cancel_award"` and the exact submission IDs (at most 100 per headless request). Only expired, unused, unsigned and unrelayed merchant-controlled preparations can be released. The server verifies chain usage and expiry; the last valid on-chain second is still valid. A successful cancellation releases the reservation and returns the submission to pending without a new wallet signature. Reassign only if the Task award window remains open. This does not revoke an already paid reward.
+
+For persisted or externally paid awards, recover the existing receipt instead of generating a second signature/payment. Separately paid or partially paid batches may require restoring each submission separately; obey the returned recovery error. Re-read the review board after cancellation or recovery before preparing new awards.
+
 ## Participant
 
 Use `task_market:discover`, `task_market:participant:read`, and `task_market:participant:write` as needed.
