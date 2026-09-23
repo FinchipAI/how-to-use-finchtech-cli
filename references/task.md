@@ -12,6 +12,12 @@ In a mounted Finch MCP harness, use these exact requester tools to create and pr
 4. Read the review board. For each user-authorized decision, prepare review through MCP, repeat the MCP/CLI identity comparison, show the award summary, and run `finch task award-sign`. The command records one EIP-712 signature batch and confirms review atomically; the runtime broadcasts the award. Do not create another signature batch after an unknown response. Verify approved submission, participation, award operation, fee, and remaining pool.
 5. Reclaim only when the user explicitly requests it and the Task is eligible: prepare through MCP, repeat the identity comparison, show the transaction summary, and run `finch task reclaim-submit`. It broadcasts once, checkpoints the hash, and confirms atomically. Do not close or reclaim a Task merely to clean up a run.
 
+### Seven-day settlement and regional admission
+
+For Tasks configured with `delayed_auto_7d`, follow the returned authoritative cutoff and settlement state. Custom/Register fallback considers the latest participant submission with timely, successful format evidence bound to the same proof and configuration. It fills only remaining award slots, using a lottery when eligible entries exceed capacity; it does not promise a reward to every participant or reopen historical terminal Tasks. Live or uncertain existing awards block fallback until resolved.
+
+Task creation restrictions and final-submission restrictions are independent region policies. In a restricted submission region, the Account limit is two final submissions across Tasks, not a daily allowance. Respect the server response; do not switch Accounts, clients, or network origin to bypass admission.
+
 ### Expired requester award reservations
 
 For an explicit requester cancellation, use the mounted `task_market_task_prepare_review` with `action: "cancel_award"` and the exact submission IDs (at most 100 per headless request). Only expired, unused, unsigned and unrelayed merchant-controlled preparations can be released. The server verifies chain usage and expiry; the last valid on-chain second is still valid. A successful cancellation releases the reservation and returns the submission to pending without a new wallet signature. Reassign only if the Task award window remains open. This does not revoke an already paid reward.

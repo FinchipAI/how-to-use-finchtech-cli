@@ -5,11 +5,13 @@
 Use scopes `agent_market:merchant:read`, `agent_market:merchant:write`, and `agent_market:operations:read`.
 
 1. Decide whether Direct API and AgentOn are separate Agents or separate Versions, and execute each Version as an independent revision, evidence, operation, and signing chain.
-2. Collect display metadata, HTTPS endpoint maps, methods, timeouts, test inputs, payment token, price, Call Right units, quantity and duration bounds, schemas, Artifact contracts, and AgentOn validation inputs.
+2. Collect display metadata, an uploaded MP4/WebM avatar video (at most 20 MiB), HTTPS endpoint maps, methods, timeouts, test inputs, payment token, price, Call Right units, quantity and duration bounds, schemas, Artifact contracts, and AgentOn validation inputs.
 3. For `direct_api_v1`, configure the Direct contract before runtime. Anonymous Direct has no credential setup. Authenticated Direct requires the MCP credential setup and returned `finch credentials fulfill` action before runtime references it.
 4. For `agenton_v2`, create the credential setup first and follow the returned `finch credentials material-download` action into a protected path. Install FCR1 through the merchant's secret manager, then configure runtime, rail, and the required Offers. Map P1/P2/P3 to `conversation_turn`, `task`, and `generation`.
 5. Run a real connection test for each Version. Require Direct health/preflight/invoke or all selected AgentOn modes; generation must complete its real Artifact upload. If a Direct test fails or is uncertain, call `agent_market_merchant_connection_test_diagnostics_get` with the same `versionId` and `operationId` before changing merchant configuration. Use its stage, HTTP status, stable result code, delivery outcome, and latency to identify the failed boundary; it never returns credentials, provider URLs, schemas, or request/response bodies. Do not seed evidence or weaken transport policy.
 6. Collect the publication review choice before creating an intent. `reviewRequired` defaults to true when omitted: the exact approved Version enters platform review and is not public until accepted; review does not guarantee recommendation. An explicitly chosen false permits direct activation after the same connection tests, safety checks and wallet approval. The choice is bound to that operation; preserve it during signing recovery. Poll the operation and re-read the authoritative Version, generation, availability and Offer IDs, distinguishing submitted-for-review from active publication. Use a retirement intent for an Offer that should no longer accept new work; do not edit history.
+
+Creating an Agent or replacing its complete listing requires `avatarUri` and `avatarMediaType` for an MP4/WebM video. Existing static avatars remain readable but must be replaced on the next complete listing save. Preserve a locator from a supported upload flow; never invent an IPFS URI or a CLI upload command. If no supported upload is available, complete the upload in the Web editor before continuing. Web video generation requires an uploaded JPG, PNG, or WebP reference image; a text prompt is optional. `supportContact` accepts 3–320 Unicode code points, including non-URL contact text.
 
 ### Listing languages through Remote MCP
 
@@ -69,8 +71,9 @@ Creator payment-token input may use canonical lowercase or a valid EIP-55 checks
   "integrationFamily": "direct_api_v1",
   "displayName": "<DISPLAY_NAME>",
   "description": "<DESCRIPTION>",
-  "supportContact": "<SUPPORT_EMAIL_OR_URL>",
-  "avatarUri": null
+  "supportContact": "<SUPPORT_CONTACT>",
+  "avatarUri": "<UPLOADED_VIDEO_IPFS_URI>",
+  "avatarMediaType": "video/mp4"
 }
 ```
 

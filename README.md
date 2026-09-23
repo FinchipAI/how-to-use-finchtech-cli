@@ -7,16 +7,20 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.7` or newer
+- Required CLI version: `0.3.8` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.7
+pnpm add --global @finchtech/cli@0.3.8
 finch --version
 ```
 
 CLI 0.3.1 is required for new SkillRoot publications and encrypted downloads, including historical encrypted Skills. Upgrade the CLI as well as this Skill; installing these instructions does not upgrade the executable. See [Skill publication and delivery](references/skill.md) for ZIP import and compatibility rules.
+
+## Authenticated downloads (CLI 0.3.8+)
+
+All Skill downloads now require an active CLI login, including plaintext packages that need no purchase or holding. CLI 0.3.8 sends the Session bearer to the official delivery gateway and acknowledges the verified download before saving the file. Upgrade the executable as well as this Skill; follow [delivery and recovery](references/skill.md) if authentication or acknowledgement fails.
 
 ## Legacy FinChip CLI
 
@@ -26,7 +30,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.7
+pnpm add --global @finchtech/cli@0.3.8
 finch --version
 ```
 
