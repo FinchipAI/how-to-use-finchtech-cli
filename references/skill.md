@@ -85,6 +85,12 @@ Journal v6 records pending stages before submission. Unknown creation, version, 
 
 `presentation-submit` reports stages and observed hashes without creating a publication journal. When `resubmitSafe` is true, setting the same URI cannot apply twice; it does not guarantee that a reverted transaction or invalid plan will succeed. Re-read chain state first, and obey authorization/input/precondition errors before retrying. A version-moved or unreadable-manifest conflict requires a newly prepared plan. Never apply this same-plan guidance to creating a Skill or version.
 
+## Browser presentation overrides and Legacy creator signatures
+
+The Browser Manage page can override listing text, individual HTML detail tabs, cover and related Skills. These overrides are distinct from MCP/CLI publication or version presentation updates: a new version does not implicitly clear an existing Browser override. Use the supported Browser restore action for the specific field or tab when the user wants the published source again; restoring the full presentation also clears related-Skill selections. Do not invent CLI override commands.
+
+For Legacy Skills whose contracts support creator attestation, only the original deploying wallet can provide the signature, even if ownership has transferred. The Browser switches to the Skill's chain before requesting the signature and records it with a separate transaction. A stored signature cannot be overwritten. Unsupported contracts offer no signing action, and attestation is provenance rather than a quality endorsement. Obtain explicit user authorization for signing and the transaction; a request to edit presentation does not authorize attestation.
+
 ## WebP covers and detail images (CLI 0.3.5+)
 
 Use CLI 0.3.5 or newer when a valid WebP cover or packaged detail image was rejected as an unsupported image. This version detects image signatures from raw bytes, including WebP headers whose binary file-size field is not valid UTF-8. Upgrade the executable and retry the failed local validation with the same source; preserve any existing publication journal and follow its recovery instructions if a transaction was already submitted. Existing image types and size limits still apply.
