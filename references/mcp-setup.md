@@ -10,13 +10,34 @@ The examples below describe client operation, not a Finch client allowlist. For 
 2. **Log in with that wallet.** Read `finch login --help` and use a supported authentication chain, for example `finch login --chain-id 56`. This signs an off-chain login challenge; it does not require funding or a chain transaction. Check `finch status` for the resulting Account, wallet and environment. `finch mcp doctor` can diagnose this stage but cannot verify harness OAuth.
 3. **Configure Finch in the current harness's native MCP settings.** Preserve its other settings. Request the scopes needed for the task; `account:read` is enough for identity verification. Where available, set this in the native client's scope option. Inspect the scope the native authorization request actually presents: a client may select its own defaults. Never rewrite the authorization URL to change scope or treat a broader request as permission to perform business operations.
 4. **Start native OAuth and keep that process running.** Use a persistent terminal session, a PTY, or a background terminal that survives individual shell calls. Do not block the only shell action until its timeout kills the login process. Use a second terminal action to complete authorization while the first waits. Clients that reject non-interactive OAuth need a real PTY; `tmux` is one way for a shell-capable agent to operate such a session without human input.
-5. **Read this attempt's authorization page.** Take the current `https://www.finchtech.ai/oauth/authorize?...` URL emitted or opened by the native process. Read that public page through browser tools or an ordinary page fetch, extract the exact `finch mcp authorize <REQUEST_TOKEN>` command, and execute it unchanged in the same CLI identity context. Do not use an old browser tab or a request from a previous attempt. Do not decode the request token, write it into scripts or reports, implement OAuth yourself, or edit the harness's credential storage.
+5. **Read this attempt's authorization page.** Take the current `https://www.finchtech.ai/oauth/authorize?...` URL emitted or opened by the native process. Read that public page through browser tools or an ordinary page fetch, extract the exact `finch mcp authorize <REQUEST_TOKEN>` command, and execute it unchanged in the same CLI identity context. Preserve the URL and command bytes programmatically: do not regenerate long strings in model output. For a tmux pane, `capture-pane -p -J` joins visual wraps; include enough pane history to capture the full current URL. Do not use an old browser tab or a request from a previous attempt. Do not decode the request token, write it into scripts or reports, implement OAuth yourself, or edit the harness's credential storage.
 6. **Let the callback finish.** The CLI opens the completion URL in the default browser. That browser must reach the callback listener belonging to the still-running harness process. For a loopback callback, browser and listener need the same network context; on a remote machine, use its working browser or the client's documented remote callback arrangement. Wait for native login to report success before ending its terminal. CLI `authorized: true` alone does not establish that the harness received and saved credentials.
 7. **Load the authenticated tools and verify identity.** Reload the native MCP connection or start a new run of the same harness with the same user, HOME/profile and configuration. Wait for tool discovery. Use native tool search when the client defers tools; an empty MCP resource list is not an empty tool list. Actually call mounted `identity_actor_get` and compare its Account, wallet and environment with `finch status`. Report CLI login, native OAuth and native identity call separately. After a restart, call it again to verify that native credentials persist.
 
 If the current conversation cannot refresh its tool catalog, a shell-capable agent can start a fresh run of its own harness and give it only the identity-check task. Use the same profile and let that process load and call its native tools. Carry forward its real tool result; do not replace it with a direct HTTP call, a custom MCP adapter or a fabricated success message.
 
 This OAuth callback is separate from Finch Browser Session handoff. `finch site open` and `finch site login` are not part of this flow. Their local-user-browser restrictions do not prohibit CLI/MCP login on a remote machine with a working callback path.
+
+### Preserve the exact authorization command
+
+When using a shell to read the page, keep the current native process's full URL in memory and pass the extracted token directly to the installed CLI. For example, after obtaining `authorization_url` from that process (not by retyping it):
+
+```python
+import html, re, subprocess, urllib.request
+from urllib.parse import urlsplit
+
+target = urlsplit(authorization_url)
+if (target.scheme, target.netloc, target.path) != ("https", "www.finchtech.ai", "/oauth/authorize"):
+    raise RuntimeError("Unexpected authorization page")
+with urllib.request.urlopen(authorization_url, timeout=20) as response:
+    page = html.unescape(response.read().decode("utf-8"))
+command = re.search(r"\bfinch mcp authorize ([A-Za-z0-9_-]+)", page)
+if command is None:
+    raise RuntimeError("No Finch authorization command in this attempt's page")
+subprocess.run(["finch", "mcp", "authorize", command.group(1)], check=True)
+```
+
+This only reads the public instruction page and invokes Finch CLI. The waiting native client still owns OAuth. A schema error or `S256 PKCE is required` after copying a URL/token is a reason to compare the captured bytes with the native output, not to rebuild PKCE or edit the token.
 
 ## OpenClaw
 
@@ -68,14 +89,19 @@ Run `opencode mcp auth finch` in a persistent terminal, then complete steps 5–
 
 ## Codex
 
-```sh
-codex mcp add finch --url https://www.finchtech.ai/mcp
-codex mcp login finch --scopes account:read
+For Codex CLI 0.156.1, merge this table into `~/.codex/config.toml`, preserving other configuration:
+
+```toml
+[mcp_servers.finch]
+url = "https://www.finchtech.ai/mcp"
+scopes = ["account:read"]
+required = true
+startup_timeout_sec = 30
 ```
 
-After OAuth completes, use the existing `[mcp_servers.finch]` table in `~/.codex/config.toml`. For a task that depends on Finch at startup, set `required = true`; optionally allow `startup_timeout_sec = 30` on a slower connection. These are Codex readiness controls, not Finch protocol requirements. Preserve other configuration.
+Then run `codex mcp login finch --scopes account:read` in a persistent terminal. `codex mcp add finch --url https://www.finchtech.ai/mcp` is also a native setup route, but may immediately begin OAuth before a subsequent `login --scopes` command executes. Directly configuring the table lets the agent select scopes before initiating one login attempt.
 
-Start a fresh Codex run after changing configuration. Wait for MCP initialization, discover deferred tools if needed, and call the native identity tool. Do not infer missing tools from `list_mcp_resources`. This recipe was checked against Codex CLI 0.156.1; see [Codex MCP configuration](https://developers.openai.com/codex/mcp/).
+`required = true` makes a task that depends on Finch wait for initialization or fail clearly; the timeout allows a slower connection. These are Codex readiness controls, not Finch protocol requirements. After OAuth succeeds, start a fresh Codex run, discover deferred tools if needed, and call the native identity tool. Do not infer missing tools from `list_mcp_resources`. See [Codex MCP configuration](https://developers.openai.com/codex/mcp/).
 
 ## Gemini CLI
 
