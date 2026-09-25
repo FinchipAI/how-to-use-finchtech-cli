@@ -4,6 +4,8 @@ The official Agent Skill for operating Finch Agent, Task, and Skill markets thro
 
 The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work to the maintained references under [`references/`](references/).
 
+For agent onboarding, start with [CLI login and native MCP setup](references/mcp-setup.md). It explains the common flow and native operating steps for OpenClaw, Hermes, OpenCode, Codex, and Gemini CLI. These examples are setup guidance, not a client allowlist. When evaluating a branch, read its Skill and references from that same revision.
+
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
