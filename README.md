@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.8` or newer
+- Required CLI version: `0.3.9` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.8
+pnpm add --global @finchtech/cli@0.3.9
 finch --version
 ```
 
@@ -30,7 +30,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.8
+pnpm add --global @finchtech/cli@0.3.9
 finch --version
 ```
 
@@ -41,6 +41,18 @@ The historical Skill repository remains available only as a migration notice and
 The public Skill repository is [`FinchipAI/how-to-use-finchtech-cli`](https://github.com/FinchipAI/how-to-use-finchtech-cli). Read the instructions and references here, and find versioned downloads under [Releases](https://github.com/FinchipAI/how-to-use-finchtech-cli/releases). The canonical source is maintained internally alongside Finch's MCP and contract code; using this Skill requires no access to the private repository.
 
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
+
+The website also serves Skill resources built from its deployed maintenance source. Website resources, this public repository's versioned release, and the installed CLI can therefore have different release dates; updating one does not publish or upgrade the others.
+
+## Diagnostic and interoperability fixes (CLI 0.3.9+)
+
+CLI 0.3.9 provides the following diagnostic and interoperability fixes. Upgrade the installed executable with the installation command above; a website deployment or Skill refresh alone does not deliver these fixes.
+
+- `finch mcp doctor` inspects current and legacy wallet/key binding without migrating legacy files, bounds each remote read to 15 seconds, and treats client guides as informational. Its report removes `mcp.supportedClients` and retains `compatibilityManifestUrl`; `ready` still covers only CLI Session and MCP discovery, with Harness OAuth `not_checked`. Consumers should use the checks and readiness scope rather than the removed field.
+- OAuth discovery accepts advertised capability reordering and additional capabilities while retaining resource/issuer authority. Authorization accepts registered default scopes when the request omits them, and compares callback targets, original query values and state independently of parameter order or opaque code length; explicit scopes remain checked.
+- Cover upload follows the server-prepared byte limit and accepted media types, checking actual file bytes. Task award signing accepts equivalent JSON object key order while keeping the EIP-712 field-array order, names, types and authority exact.
+
+Older CLI versions retain their historical guide checks and legacy-wallet migration behavior during doctor. A guide error does not prove the service is down or authorize replacing a wallet, clearing recovery state, or bypassing signing checks.
 
 CLI 0.3.7 automatically stages multipart uploads above 4,000,000 bytes and shares a 30 MiB final package limit across upload and download. It reads manifests with authorized external media and reports publication, presentation and legacy-recovery progress. Browser publishing retains its multipart limit and rejects external media. Follow [publication diagnostics and recovery](references/skill.md#publication-diagnostics-and-recovery-cli-037) before retrying; source ZIP limits do not include final metadata or encryption overhead.
 
