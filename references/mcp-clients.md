@@ -57,10 +57,9 @@ This command is interactive: complete its configuration and tool-enablement prom
 
 ```sh
 claude mcp add --transport http --scope user finch https://www.finchtech.ai/mcp
-finch mcp connect -- claude mcp login finch --no-browser
 ```
 
-Finch is a remote HTTP server; no local Finch server executable is needed. Use a new Claude Code session to load its tools.
+In Claude Code 2.1.283, `finch mcp connect -- claude mcp login finch` exits because its stdin is not a terminal, with or without `--no-browser`. That first entry point is inapplicable; use fallback 2: run `claude mcp login finch` in an interactive terminal, keep it running, and send its original authorization URL to `finch mcp authorize --stdin`. Its loopback listener accepts the callback. Finch is a remote HTTP server; no local Finch server executable is needed. Use a new Claude Code session to load its tools.
 
 ## Gemini CLI
 
@@ -72,7 +71,18 @@ The native OAuth entry is `/mcp auth finch` inside an interactive Gemini CLI ses
 
 ## Goose
 
-Use `goose configure` → Add Extension → Remote Extension (Streamable HTTP), with `https://www.finchtech.ai/mcp`. Authorize through the native extension connection. `goose mcp` runs bundled MCP servers; it is not a remote OAuth login command. If the native connection exposes an authorization URL, keep it running and use fallback 2. Otherwise use fallback 3. Do not replace native OAuth with a Finch bearer header.
+Merge a named extension into Goose's native `~/.config/goose/config.yaml`:
+
+```yaml
+extensions:
+  finch:
+    enabled: true
+    type: streamable_http
+    name: finch
+    uri: https://www.finchtech.ai/mcp
+```
+
+Alternatively use `goose configure` → Add Extension → Remote Extension (Streamable HTTP). Authorize the saved `finch` extension in a new native Goose session. An ad-hoc `--with-streamable-http-extension` connection can receive a different name and therefore a separate OAuth credential; it does not verify the saved extension. `goose mcp` runs bundled MCP servers, not a remote OAuth login command. Keep the native connection running and use its displayed authorization URL with fallback 2; otherwise use fallback 3. Do not replace native OAuth with a Finch bearer header.
 
 ## Verify the result
 

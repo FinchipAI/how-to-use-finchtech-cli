@@ -9,6 +9,10 @@ Use this one Skill for all three Finch markets and for either side of a transact
 
 The former `finchip-cli` package and `use-finchip-cli` Skill are deprecated and no longer maintained. Do not use their commands or compatibility guidance for Finch; use `@finchtech/cli`, this Skill, and the official Finch Remote MCP.
 
+## Login and MCP connection
+
+For a login or connection request, read [Native MCP setup](references/mcp-clients.md) before choosing the current application's registration and OAuth commands. Complete CLI login, native MCP authorization, and a mounted `identity_actor_get` call matching `finch status`; these are separate checkpoints. Doctor checks CLI health and discovery, not whether the agent's MCP connection is authorized.
+
 ## Shared authority and setup
 
 1. For market work, ask which market, role, and object the user means. Login and MCP setup do not require a market choice. Use the official PROD CLI defaults and Remote MCP; do not offer or configure environment selection. Preserve the user's chosen Account and wallet across Remote MCP and local actions.
