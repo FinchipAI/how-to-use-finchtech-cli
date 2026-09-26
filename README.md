@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.3.9` or newer
+- Required CLI version: `0.4.0` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.3.9
+pnpm add --global @finchtech/cli@0.4.0
 finch --version
 ```
 
@@ -30,7 +30,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.3.9
+pnpm add --global @finchtech/cli@0.4.0
 finch --version
 ```
 
@@ -43,6 +43,10 @@ The public Skill repository is [`FinchipAI/how-to-use-finchtech-cli`](https://gi
 Tagged releases in this repository version the Skill independently from `@finchtech/cli`.
 
 The website also serves Skill resources built from its deployed maintenance source. Website resources, this public repository's versioned release, and the installed CLI can therefore have different release dates; updating one does not publish or upgrade the others.
+
+## MCP connection without a Browser (CLI 0.4.0+)
+
+CLI 0.4.0 lets an Agent connect its MCP client to Finch without a Browser. `finch mcp connect -- <MCP_CLIENT_LOGIN_COMMAND...>` runs the client's own login command and approves the one authorization URL it prints; `finch mcp authorize --stdin` approves a URL the Agent copied unchanged; the command shown on the Finch authorization page still works when neither is possible. Loopback callbacks are delivered directly to the client on this machine, and HTTPS callbacks still open in the Browser. The Finch authorization server now returns the RFC 9207 `iss` parameter and refuses older CLI releases with an upgrade instruction. See `SKILL.md` for the order in which to try these entry points.
 
 ## Diagnostic and interoperability fixes (CLI 0.3.9+)
 
