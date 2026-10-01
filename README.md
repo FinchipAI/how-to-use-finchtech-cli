@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.4.0` or newer
+- Required CLI version: `0.4.0` or newer; Avalanche Skill operations require `0.4.1` or newer
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.4.0
+pnpm add --global @finchtech/cli@0.4.1
 finch --version
 ```
 
@@ -30,11 +30,15 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.4.0
+pnpm add --global @finchtech/cli@0.4.1
 finch --version
 ```
 
 The historical Skill repository remains available only as a migration notice and audit record: [`FinchipAI/how-to-use-finchip-cli`](https://github.com/FinchipAI/how-to-use-finchip-cli).
+
+## Avalanche Skill network (CLI 0.4.1+)
+
+Avalanche C-Chain (`43114`) is the sixth production Skill network. Upgrade the executable to CLI `0.4.1` or newer before creating, acquiring, or managing an Avalanche Skill. Prices and gas use AVAX; transaction chains are independent of CLI login authentication chains. Follow [chain identity](references/skill.md#chain-identity) and preserve the exact Remote MCP plan chain.
 
 ## Source and releases
 
