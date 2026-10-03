@@ -2,6 +2,14 @@
 
 Source shape and content protection are independent choices. A Creator may publish one file or one directory using `plaintext`, `finchip_v2`, or `lit` when the selected deployment supports that mode. Never substitute a GitHub or arbitrary IPFS URL for a new local package.
 
+## Session wallet intent handoff
+
+With CLI 0.5.0 or newer, whose installed help supports `--intent`, pass `walletIntent.intentId` from MCP preparation to the corresponding `finch skill` local command. Purchase, conversion, price/supply, publication/version/presentation, cover upload and delivery use this immutable reference. `--from-file` carries the reference only; the CLI fetches authoritative preparation bytes using its Session. Deploy the intent migrations/endpoints and release CLI 0.5.0 before using this handoff. Updating this Skill does not update the executable.
+
+Wallet actions must not create or read MCP business grants. Business reads and preparation remain in the Harness's Remote MCP connection. The CLI handles local files, encryption and private material, reconstructs/simulates/signs the prepared call, checkpoints its hash before waiting, and returns a wallet receipt. Read business results through MCP. For an unexecuted old plan without a reference, prepare again through MCP; never add a fabricated reference.
+
+Use `finch skill recover intent <FINGERPRINT>` for purchase/conversion/price/supply/presentation wallet results and `finch skill recover publication <FINGERPRINT>` for publication material. Follow the exact returned command. Known receipts can resume confirmation without repeating wallet work, and projection lag retains the journal. Existing buyer journals can acquire only a receipt-only reference after canonical transaction verification. Existing publication material journals retain conservative recovery; missing keys or unknown send outcomes require reconciliation, never blind resubmission.
+
 ## CLI 0.3.8 publication and delivery
 
 Require CLI 0.3.8 or newer before these workflows. All downloads, including plaintext, require the intended Account's active AgentCLI Session. The CLI supplies its bearer to the official delivery gateway and acknowledges verified downloads before returning bytes for the output file; never construct the request or expose the bearer yourself. This version also supports staged uploads, the 30 MiB package ceiling, and manifests with authorized external media. Older clients can reject those manifests or packages above their bundled limit. Updating this Skill alone does not update the CLI.
@@ -14,7 +22,7 @@ Protected Finch-managed and Lit downloads use Oracle V2 grants sealed to a tempo
 
 ## Search continuation and fresh publication signatures
 
-Pass the returned `nextCursor` unchanged to `finch skill search --cursor`, retaining the same filters. Treat cursors as opaque strings, never integers. Restart from page one after a stale or filter-mismatched cursor; CLI 0.3.1 and Remote MCP advertise the required search capability automatically.
+Pass the returned `nextCursor` unchanged to the `cursor` input of `skill_market_skills_list`, retaining the same filters. Treat cursors as opaque strings, never integers. Restart from page one after a stale or filter-mismatched cursor; Keep discovery in Remote MCP.
 
 Finch-managed publication key requests carry a signed timestamp and are consumed once. If a request expires or was used, sign a fresh request through the updated CLI; never replay the old signature. Keep any existing transaction or publication journal and follow its typed recovery path. Lit publication is unchanged.
 
@@ -22,7 +30,7 @@ Finch-managed publication key requests carry a signed timestamp and are consumed
 
 Every concrete Skill is identified by `(chainId, skillId[, version])`. PROD discovery may return Ethereum `1`, Optimism `10`, BNB Smart Chain `56`, Base `8453`, Arbitrum `42161`, and Avalanche C-Chain `43114` records in one result set. Preserve the returned `chainId` through detail, delivery, purchase, conversion, publication/version preparation, Manage, confirmation, recovery, and every CLI local action. Never infer it from the CLI login profile, a contract address, or a previous result, and never retry a missing-chain request against Base: Ethereum/Optimism and BNB/Arbitrum reuse contract addresses, and Avalanche's SkillToken address is also Arbitrum's RevenueRight address.
 
-Before any Avalanche custody action, verify `finch --version` reports CLI `0.4.1` or newer; CLI `0.4.0` cannot execute plans for `43114`. Request an upgrade before executing the plan when this requirement is unmet. Avalanche prices and gas use AVAX. CLI login authentication chains remain unchanged; select a supported chain from `finch login --help`, then preserve the Avalanche chain in the business plan. A Browser wallet on Avalanche authenticates on Base and switches back for its Skill transaction.
+Before any Avalanche custody action, verify `finch --version` reports CLI `0.5.0` or newer; CLI `0.4.0` cannot execute plans for `43114`. Request an upgrade before executing the plan when this requirement is unmet. Avalanche prices and gas use AVAX. CLI login authentication chains remain unchanged; select a supported chain from `finch login --help`, then preserve the Avalanche chain in the business plan. A Browser wallet on Avalanche authenticates on Base and switches back for its Skill transaction.
 
 The Remote MCP plan is the market-chain authority. Finch CLI selects the source-controlled chain definition, contract authority, envelope tag, and public RPC for that exact plan chain. Do not set `FINCH_ENVIRONMENT`, `FINCHTECH_RPC_URL_<chainId>`, or `FINCH_RPC_URL_<chainId>`; installed CLI ignores them. The only optional endpoint override is the protected profile installed by the TEST Skill.
 
@@ -56,7 +64,7 @@ External media requires an operator grant for both the publishing wallet and eac
 
 Document preparation stores a content-addressed derived manifest and waits for the same public IPFS gateway path used by CLI 0.2.1. During gateway warm-up, `SKILL_MANIFEST_UNAVAILABLE` is recoverable: retry the exact same prepare payload after a short wait. Do not alter `presentation`, assets, or document intent between those retries. Other validation errors require fixing the request rather than retrying it unchanged.
 
-After prepare succeeds, repeat the MCP/CLI identity check and run the returned plan unchanged with `finch skill presentation-submit --from-file <PLAN.json>`. The CLI locally retrieves the derived manifest, preserves all unmodified documents and versions, applies the prepared presentation, re-encodes `setSkillURI`, signs, and broadcasts. Re-read `skill_market_manage_get` and the public content routes after confirmation; a deleted document route must return `404`.
+After prepare succeeds, repeat the MCP/CLI identity check and run the returned plan unchanged with `finch skill presentation-submit --intent <INTENT_ID>` with the returned `walletIntent.intentId`. The CLI locally retrieves the derived manifest, preserves all unmodified documents and versions, applies the prepared presentation, re-encodes `setSkillURI`, signs, and broadcasts. Re-read `skill_market_manage_get` and the public content routes after confirmation; a deleted document route must return `404`.
 
 ### Related Skills and Referenced By
 
@@ -85,13 +93,13 @@ Staged upload failures can include `uploadTransport`, `uploadBytes`, `uploadObje
 
 For `SKILL_SOURCE_ZIP_INVALID`, inspect `zipReason`: `archive_too_large`, `expanded_content_too_large`, `utf8_flag_missing`, `filename_encoding_invalid`, or `invalid_archive`. Size errors include `actualBytes`, `maxBytes`, and `sizeBasis` (`archive` or `declared_expanded`); a safe relative entry path may be present. Non-ASCII ZIP filenames require valid UTF-8 bytes and bit 11 in the headers. Rebuild an invalid archive; these input failures use exit code 2 and `fix_request` before upload.
 
-Skill operation and transport errors report HTTP status and available safe correlation IDs; intent diagnostics identify `/api/skills/intents`. `responseIssue` distinguishes transport/body/JSON/schema failures; `schemaIssues` is bounded and contains no response values. Diagnostics do not repair server-side failures or Harness OAuth. Use returned remote IDs for support; the publication fingerprint identifies a local journal, not a server trace. A download `output_destination` refusal concerns the requested output directory/file, not the wallet store; use a new file at the documented protected destination.
+Skill operation and transport errors report HTTP status and available safe correlation IDs; legacy publication diagnostics identify `/api/skills/intents`; current wallet execution uses the owned Skill intent resource. `responseIssue` distinguishes transport/body/JSON/schema failures; `schemaIssues` is bounded and contains no response values. Diagnostics do not repair server-side failures or Harness OAuth. Use returned remote IDs for support; the publication fingerprint identifies a local journal, not a server trace. A download `output_destination` refusal concerns the requested output directory/file, not the wallet store; use a new file at the documented protected destination.
 
 Publication failures report `phase`, `fingerprint`, `transactionHashes`, `submissionStatus`, `unconfirmedActions`, `resubmitSafe`, and `recoveryCommand`. Follow the returned `retryable` and `nextAction` together: a confirmed transaction with a pending projection is not proof that every required transaction finished. Re-read the Skill and use a supplied recovery command after comparing CLI/MCP identity. `not_attempted` describes this invocation, not previous attempts; `hash_known` is not a successful receipt by itself. Fingerprint-only recovery can reuse stored bytes. Never print journals or credentials.
 
 Journal v6 records pending stages before submission. Unknown creation, version, or delivery-key outcomes still block blind resubmission; read the specific chain state named in the error and contact support when instructed. CLI 0.3.7 permits the URI stage of a legacy or marked journal to converge on the same URI through its typed recovery path. Known hashes are verified without rebroadcast. Keep journals and wallet/authorization state intact.
 
-`presentation-submit` reports stages and observed hashes without creating a publication journal. When `resubmitSafe` is true, setting the same URI cannot apply twice; it does not guarantee that a reverted transaction or invalid plan will succeed. Re-read chain state first, and obey authorization/input/precondition errors before retrying. A version-moved or unreadable-manifest conflict requires a newly prepared plan. Never apply this same-plan guidance to creating a Skill or version.
+`presentation-submit` now checkpoints its wallet result under intent recovery; older CLI builds report stages and observed hashes without that checkpoint. When `resubmitSafe` is true, setting the same URI cannot apply twice; it does not guarantee that a reverted transaction or invalid plan will succeed. Re-read chain state first, and obey authorization/input/precondition errors before retrying. A version-moved or unreadable-manifest conflict requires a newly prepared plan. Never apply this same-plan guidance to creating a Skill or version.
 
 ## Browser presentation overrides and Legacy creator signatures
 

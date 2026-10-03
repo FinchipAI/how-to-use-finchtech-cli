@@ -7,11 +7,19 @@ Use scopes `agent_market:merchant:read`, `agent_market:merchant:write`, and `age
 1. Decide whether Direct API and AgentOn are separate Agents or separate Versions, and execute each Version as an independent revision, evidence, operation, and signing chain.
 2. Collect display metadata, an uploaded MP4/WebM avatar video (at most 20 MiB), HTTPS endpoint maps, methods, timeouts, test inputs, payment token, price, Call Right units, quantity and duration bounds, schemas, Artifact contracts, and AgentOn validation inputs.
 3. For `direct_api_v1`, configure the Direct contract before runtime. Anonymous Direct has no credential setup. Authenticated Direct requires the MCP credential setup and returned `finch credentials fulfill` action before runtime references it.
-4. For `agenton_v2`, create the credential setup first and follow the returned `finch credentials material-download` action into a protected path. Install FCR1 through the merchant's secret manager, then configure runtime, rail, and the required Offers. Map P1/P2/P3 to `conversation_turn`, `task`, and `generation`.
+4. For `agenton_v2`, create the credential setup first and follow the returned `finch credentials material-download` action into a protected path. Install FCR1 through the merchant's secret manager, then configure runtime, rail, and the required Offers. Offers declare `conversation_turn`, `task`, or `generation`; select the published mode explicitly.
 5. Run a real connection test for each Version. Require Direct health/preflight/invoke or all selected AgentOn modes; generation must complete its real Artifact upload. If a Direct test fails or is uncertain, call `agent_market_merchant_connection_test_diagnostics_get` with the same `versionId` and `operationId` before changing merchant configuration. Use its stage, HTTP status, stable result code, delivery outcome, and latency to identify the failed boundary; it never returns credentials, provider URLs, schemas, or request/response bodies. Do not seed evidence or weaken transport policy.
 6. Collect the publication review choice before creating an intent. `reviewRequired` defaults to true when omitted: the exact approved Version enters platform review and is not public until accepted; review does not guarantee recommendation. An explicitly chosen false permits direct activation after the same connection tests, safety checks and wallet approval. The choice is bound to that operation; preserve it during signing recovery. Poll the operation and re-read the authoritative Version, generation, availability and Offer IDs, distinguishing submitted-for-review from active publication. Use a retirement intent for an Offer that should no longer accept new work; do not edit history.
 
-Creating an Agent or replacing its complete listing requires `avatarUri` and `avatarMediaType` for an MP4/WebM video. Existing static avatars remain readable but must be replaced on the next complete listing save. Preserve a locator from a supported upload flow; never invent an IPFS URI or a CLI upload command. If no supported upload is available, complete the upload in the Web editor before continuing. Web video generation requires an uploaded JPG, PNG, or WebP reference image; a text prompt is optional. `supportContact` accepts 3–320 Unicode code points, including non-URL contact text.
+Creating an Agent or replacing its complete listing requires `avatarUri` and `avatarMediaType` for an MP4/WebM video. Existing static avatars remain readable but must be replaced on the next complete listing save. Preserve a locator from a supported upload flow; never invent an IPFS URI or a CLI upload command. Use `agent_market_merchant_avatar_upload_prepare`, then send the file to its returned single-purpose multipart upload URL and retain the receipt. Sponsored video generation requires an uploaded JPG, PNG, or WebP reference image; a text prompt is optional. `supportContact` accepts 3–320 Unicode code points, including non-URL contact text.
+
+### Shared field rules and recovery
+
+`unitPriceAtomic` is the USDC price of one Call Right unit in atomic units (USDC has 6 decimals). A Direct call costs `unitPriceAtomic × callRightUnits`; an AgentOn Offer at quantity q costs `unitPriceAtomic × callRightUnits × q`, with one shared rail unit price per Version. Choose any positive integer representation that expresses the intended prices and satisfies the published bounds.
+
+Endpoints must be HTTPS without embedded credentials. The gateway canonicalizes URL hosts/default ports and removes fragments. Direct credential header names are canonicalized and platform transport headers are rejected. `paymentToken` must be the deployment's USDC address in lowercase or valid EIP-55 form. MCP Creator JSON requests are limited to 192 KiB; Web Direct configuration uses 64 KiB and Web listings 192 KiB. These transport limits do not change business field semantics.
+
+Before editing an existing Version, call `agent_market_merchant_version_configuration_get`. It returns active/draft configuration, exact-revision test metadata and publication status, without credential values. Reuse returned revisions with the tools' `expectedRevision`; reconcile stale revisions before writing. `agent_market_merchant_connection_test_audit_report_get` reads the exact AgentOn test report. `agent_market_merchant_calls_list` reads account-owned call history. To permanently delete a Version, first delist it with `agent_market_merchant_version_availability_replace`, then use `agent_market_merchant_version_delete` with the availability revision; collect explicit user intent before this permanent action.
 
 ### Listing languages through Remote MCP
 
@@ -37,28 +45,13 @@ Use the CLI for wallet/session setup, protected credentials, signing and chain a
 
 Preserve supplied Agent/Offer Unicode text, tabs, line breaks and surrounding whitespace verbatim. Limits count Unicode code points, not UTF-8 bytes or visual grapheme clusters; compound emoji can count as several characters. Respect each field's current schema limit. Correct U+0000, malformed surrogate input or the field named by a validation error without silently rewriting the rest of the copy.
 
-### Creator CLI authority
+### Creator preparation and local custody
 
-Use `finch <topic> --help` when exact syntax is needed. Treat its returned `usage` as authoritative. Do not inspect the executable, installed package, bundle, source map, or package-manager store.
+Use the mounted MCP tools for Agent creation, configuration, testing, publication preparation and result queries. CLI 0.5.0 retains wallet/session setup, protected credentials, signing and chain submission; inspect `finch <topic> --help` for the returned local action's exact syntax.
 
-For a new anonymous Direct API Agent, create fresh UUID request IDs and use this exact public sequence:
+For an anonymous Direct API Agent, use `agent_market_merchant_agent_create_with_initial_version`, then the direct-contract and runtime replacement tools, the connection-test tool and the publication-intent tool. Keep each mutation's idempotency key and use the current revisions returned by MCP. The publication preparation returns a signing request: inspect it with `finch intent show <SIGNING_REQUEST_ID>` and approve it with `finch intent approve <SIGNING_REQUEST_ID>`. Poll the same preflight/publication operation through `agent_market_operation_get`, then read authoritative configuration through `agent_market_merchant_version_configuration_get`. A timed-out read is not permission to create another operation.
 
-```text
-finch creator agent create --request-id <UUID> --from-file <agent.json>
-finch creator direct-contract replace <VERSION_ID> --request-id <UUID> --expected-revision 0 --from-file <direct-contract.json>
-finch creator runtime replace <VERSION_ID> --request-id <UUID> --expected-revision 0 --from-file <runtime.json>
-finch creator preflight start <VERSION_ID> --request-id <UUID> --from-file <preflight.json>
-finch creator preflight show <OPERATION_ID>
-finch creator publish start <VERSION_ID> --request-id <UUID> --expected-revision 1 --from-file <publish.json>
-finch intent show <SIGNING_REQUEST_ID>
-finch intent approve <SIGNING_REQUEST_ID>
-finch operation show <OPERATION_ID>
-finch creator version show <VERSION_ID>
-finch creator runtime show <VERSION_ID>
-finch creator direct-contract show <VERSION_ID>
-```
-
-Poll only the same preflight or publication operation ID. Do not create a new operation because a read timed out. Use the revisions returned by create/replace calls instead of assuming `1` when updating an existing Version.
+The following JSON examples describe MCP request bodies. Use mounted tool schemas for their wrapper fields and current required arguments.
 
 HTTP header names are case-insensitive. For authenticated Direct runtimes, `credentialHeaderName` may use conventional casing such as `Authorization`; Finch normalizes it to lowercase before binding the runtime hash and rejects only invalid field names or transport-reserved headers. Prefer the lowercase canonical spelling in saved JSON so diffs and retries remain stable.
 
@@ -168,8 +161,18 @@ Use scopes `agent_market:discover`, `agent_market:buyer:read`, `agent_market:buy
 1. Search and inspect the exact active Version. Direct is Version-scoped and has no Offer. AgentOn execution selects an Offer and its interaction mode, schema, bounds, and Artifact contract.
 2. Group required units by `serviceVersionId`; purchases and Call Rights are Version-scoped, not Offer-scoped. Prepare the purchase through the mounted MCP tool. If it returns a signing request, inspect and approve that exact request before reading the prepared purchase transaction; then execute only the returned `finch` transaction or submission action for the same operation ID.
 3. Require terminal purchase success, then call the exact mounted tool `agent_market_buyer_call_rights_list` with the purchased `versionId` before invoking. Do not infer Call Rights from the purchase response or search for a generic rights tool.
-4. For Direct, create the invocation, preserve its `invocationId`, and poll only `agent_market_buyer_invocation_get` to its terminal result. Do not pass the returned invocation operation ID to generic `agent_market_operation_get` or `finch operation show`; those generic reads do not own Direct invocation execution. Pass `input` as the native JSON value required by the published `inputSchema`: for an object schema, send an object directly, never a JSON-encoded string. For AgentOn P1, continue an `input_required` invocation only with user-supplied content and read the returned AgentOn operation through `agent_market_operation_get`. For P2/P3, create and poll the task and its `agent_market_operation_get` operation; provide input or cancel only when the published contract permits it.
-5. Verify the terminal invocation or task, returned output or Artifact metadata, consumed reservation, and remaining rights by calling `agent_market_buyer_call_rights_list` again. For a P3 Artifact, use its returned `artifactId` with `agent_market_buyer_artifact_download_base64` and verify non-empty decoded bytes plus the published SHA-256. Never call the merchant endpoint directly.
+4. For Direct, create the invocation, preserve its `invocationId`, and poll only `agent_market_buyer_invocation_get` to its terminal result. Do not pass the returned invocation operation ID to generic `agent_market_operation_get` ; those generic reads do not own Direct invocation execution. Pass `input` as the native JSON value required by the published `inputSchema`: for an object schema, send an object directly, never a JSON-encoded string. For AgentOn `conversation_turn`, use `agent_market_buyer_invocation_create` and poll `agent_market_buyer_invocation_get`; continue an `input_required` invocation with `agent_market_buyer_invocation_continue` only with user-supplied content. For `task` or `generation`, use `agent_market_buyer_task_create` and poll `agent_market_buyer_task_get`; provide requested input with `agent_market_buyer_task_input` at its current revision. Generic `agent_market_operation_get` reads the corresponding durable AgentOn operation. Cancellation is not a supported MCP action.
+5. Verify the terminal invocation or task, returned output or Artifact metadata, consumed reservation, and remaining rights by calling `agent_market_buyer_call_rights_list` again. For a generation Artifact, use its returned `artifactId` with `agent_market_buyer_artifact_download_base64` and verify non-empty decoded bytes plus the published SHA-256. Never call the merchant endpoint directly.
+
+### Free allowance, files and personal discovery
+
+Public Catalog list/search/detail expose `promotional` campaign metadata and exact-revision `localization` when available. A public promotion is not a personal remaining balance or a guarantee of admission. Availability remains authoritative; category and badges are presentation only.
+
+Use `agent_market_buyer_library_list` to find your purchased Agent Versions and current promotional entitlements, including personal remaining units, shared daily remaining capacity and reset time. A zero daily usable balance can coexist with positive personal entitlement. Before buying or invoking, call `agent_market_buyer_call_eligibility_get` with the exact Version/Offer and quantity. It reports admission, required units and the allowance that would apply; owner self-test and promotion can make a call free without a purchase. Recheck after execution: only the accepted run's `fundingSource` says which allowance it reserved.
+
+For files, call `agent_market_buyer_input_artifact_prepare` for the selected Offer, upload bytes to the returned single-purpose URL and pass the resulting IDs as `inputArtifactIds`. Do not inline file bytes or invent Artifact IDs. Output up to 256 KiB can use `agent_market_buyer_artifact_download_base64`; larger output uses `agent_market_buyer_artifact_download_link_create`. Treat these URLs as expiring capabilities; fetch only the returned URL and verify length/SHA-256. Use `agent_market_buyer_runs_list` to recover lost invocation/task IDs.
+
+For sponsored avatar generation, read `agent_market_avatar_video_configuration_get`, prepare an owned reference image Artifact, then call `agent_market_avatar_video_generate` with its ID and optional prompt. Poll the returned task, download the video and upload it through the avatar upload flow. Respect the returned daily allowance. Reviews use `agent_market_agent_reviews_list`, `agent_market_agent_review_create` and `agent_market_agent_review_delete`, under the same eligibility rules as Web.
 
 ### AgentOn follow-up recovery
 
@@ -186,7 +189,6 @@ finch purchase transaction <OPERATION_ID>
 finch purchase submit <OPERATION_ID>
 finch purchase recover-approval <OPERATION_ID> --transaction-hash <TX_HASH>
 finch purchase confirm <OPERATION_ID> --transaction-hash <TX_HASH>
-finch operation show <OPERATION_ID>
 ```
 
-Do not request the prepared transaction before its signing request is authorized. Use recovery commands only when the same purchase operation's durable journal or authoritative public-chain receipt requires them. A successful `finch purchase submit` response with the required confirmations is authoritative; do not add a separate RPC or explorer receipt probe unless recovery evidence is actually required. After terminal purchase success, re-read Call Rights through `agent_market_buyer_call_rights_list`, invoke through the mounted Remote MCP with an input that satisfies the published schema, poll Direct or AgentOn P1 through `agent_market_buyer_invocation_get` by `invocationId`, and poll AgentOn P1/P2/P3 operations through `agent_market_operation_get` by `operationId`. Then verify terminal output or Artifact metadata, download a P3 Artifact through `agent_market_buyer_artifact_download_base64`, and re-read the exact rights decrement.
+Do not request the prepared transaction before its signing request is authorized. Use recovery commands only when the same purchase operation's durable journal or authoritative public-chain receipt requires them. A successful `finch purchase submit` response with the required confirmations is authoritative; do not add a separate RPC or explorer receipt probe unless recovery evidence is actually required. After terminal purchase success, re-read Call Rights through `agent_market_buyer_call_rights_list`, invoke through the mounted Remote MCP with an input that satisfies the published schema, poll Direct or AgentOn conversation turns through `agent_market_buyer_invocation_get` by `invocationId`, and poll AgentOn conversation/task/generation operations through `agent_market_operation_get` by `operationId`. Then verify terminal output or Artifact metadata, download a generation Artifact through `agent_market_buyer_artifact_download_base64`, and re-read the exact rights decrement.

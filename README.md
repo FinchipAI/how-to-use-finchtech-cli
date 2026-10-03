@@ -7,16 +7,16 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.4.0` or newer; Avalanche Skill operations require `0.4.1` or newer
+- Required CLI version: `0.5.0` or newer for Session-owned market actions
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.4.1
+pnpm add --global @finchtech/cli@0.5.0
 finch --version
 ```
 
-CLI 0.3.1 is required for new SkillRoot publications and encrypted downloads, including historical encrypted Skills. Upgrade the CLI as well as this Skill; installing these instructions does not upgrade the executable. See [Skill publication and delivery](references/skill.md) for ZIP import and compatibility rules.
+CLI 0.5.0 supports new SkillRoot publications and encrypted downloads, including historical encrypted Skills. Upgrade the CLI as well as this Skill; installing these instructions does not upgrade the executable. See [Skill publication and delivery](references/skill.md) for ZIP import and compatibility rules.
 
 ## Authenticated downloads (CLI 0.3.8+)
 
@@ -30,7 +30,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.4.1
+pnpm add --global @finchtech/cli@0.5.0
 finch --version
 ```
 
@@ -38,7 +38,7 @@ The historical Skill repository remains available only as a migration notice and
 
 ## Avalanche Skill network (CLI 0.4.1+)
 
-Avalanche C-Chain (`43114`) is the sixth production Skill network. Upgrade the executable to CLI `0.4.1` or newer before creating, acquiring, or managing an Avalanche Skill. Prices and gas use AVAX; transaction chains are independent of CLI login authentication chains. Follow [chain identity](references/skill.md#chain-identity) and preserve the exact Remote MCP plan chain.
+Avalanche C-Chain (`43114`) is the sixth production Skill network. Upgrade the executable to CLI `0.5.0` or newer before creating, acquiring, or managing an Avalanche Skill. Prices and gas use AVAX; transaction chains are independent of CLI login authentication chains. Follow [chain identity](references/skill.md#chain-identity) and preserve the exact Remote MCP plan chain.
 
 ## Source and releases
 
@@ -68,7 +68,7 @@ CLI 0.3.7 automatically stages multipart uploads above 4,000,000 bytes and share
 
 ## First wallet and partial diagnostics (CLI 0.3.4+)
 
-To keep an existing identity on a fresh installation, use `finch wallet use --file <PATH>` with an owner-only file containing the existing private key. Import is offline; never paste the key into a command or chat. Creating a new wallet creates a different identity and requires an explicit choice. Import is blocked when wallet files are damaged, local authorization remains, or recovery is pending. Restore damaged wallet files from backup. For orphaned authorization, restore the original wallet or explicitly use `finch logout --local`; never delete transaction journals to bypass recovery. Existing Account switching requires login and successful remote revocation before changing the current wallet.
+To keep an existing identity on a fresh installation, use `finch wallet use --file <PATH>` with an owner-only file containing the existing private key. Import is offline; never paste the key into a command or chat. Creating a new wallet creates a different identity and requires an explicit choice. Import is blocked when wallet files are damaged, local authorization remains, or recovery is pending. Restore damaged wallet files from backup. For orphaned authorization, restore the original wallet or explicitly use `finch logout --local`; never delete transaction journals to bypass recovery. With a stored Session, switching Accounts requires successful remote revocation before changing the current wallet. CLI 0.5.0 permits an offline switch when no Session is stored, makes no remote-revocation claim, and blocks a pending login or partial/corrupt Session until it is recovered or explicitly repaired.
 
 Run `finch login --help` to read production authentication-chain IDs (1, 10, 56, 8453, 42161). For example, `finch login --chain-id 56` selects an authentication chain only; the server validates support and market plans determine transaction chains.
 
@@ -81,3 +81,9 @@ CLI 0.3.5 fixes valid WebP covers and packaged detail images being rejected when
 ## Market category compatibility (CLI 0.3.6+)
 
 Use CLI 0.3.6 or newer for the expanded market categories. Skill response display categories now accept bounded text, so future taxonomy additions do not require another CLI upgrade. Updating the website or this Skill does not upgrade an installed CLI.
+
+## Session-owned wallet actions (CLI 0.5.0)
+
+Business discovery, configuration, preparation and result queries run through Remote MCP. The CLI executes the returned intent reference with its own Session and keeps local keys and recovery journals. `creator`, `operation show`, `skill search` and `mcp grant` have moved out of the CLI. Upgrade cleanup removes only obsolete local grant files; it preserves wallets, Sessions and recovery journals and does not revoke remote OAuth.
+
+Release these instructions after the intent migrations/endpoints and CLI 0.5.0 package are available in the intended environment. Updating the Skill or website is separate from publishing the npm package.
