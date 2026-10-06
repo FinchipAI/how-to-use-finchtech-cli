@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.5.0` or newer for Session-owned market actions
+- Required CLI version: `0.5.1` or newer for Session-owned market actions
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.0
+pnpm add --global @finchtech/cli@0.5.1
 finch --version
 ```
 
@@ -30,7 +30,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.0
+pnpm add --global @finchtech/cli@0.5.1
 finch --version
 ```
 
@@ -68,7 +68,7 @@ CLI 0.3.7 automatically stages multipart uploads above 4,000,000 bytes and share
 
 ## First wallet and partial diagnostics (CLI 0.3.4+)
 
-To keep an existing identity on a fresh installation, use `finch wallet use --file <PATH>` with an owner-only file containing the existing private key. Import is offline; never paste the key into a command or chat. Creating a new wallet creates a different identity and requires an explicit choice. Import is blocked when wallet files are damaged, local authorization remains, or recovery is pending. Restore damaged wallet files from backup. For orphaned authorization, restore the original wallet or explicitly use `finch logout --local`; never delete transaction journals to bypass recovery. With a stored Session, switching Accounts requires successful remote revocation before changing the current wallet. CLI 0.5.0 permits an offline switch when no Session is stored, makes no remote-revocation claim, and blocks a pending login or partial/corrupt Session until it is recovered or explicitly repaired.
+To keep an existing identity on a fresh installation, use `finch wallet use --file <PATH>` with an owner-only file containing the existing private key. Import is offline; never paste the key into a command or chat. Creating a new wallet creates a different identity and requires an explicit choice. First-wallet import requires no registered wallets or residual local authorization. Restore damaged wallet files from backup. For orphaned authorization, restore the original wallet or explicitly use `finch logout --local`; never delete transaction journals to bypass recovery. With a stored Session, switching Accounts requires successful remote revocation before changing the current wallet. CLI 0.5.0 permits an offline switch when no Session is stored, makes no remote-revocation claim, and blocks a pending login or partial/corrupt Session until it is recovered or explicitly repaired.
 
 Run `finch login --help` to read production authentication-chain IDs (1, 10, 56, 8453, 42161). For example, `finch login --chain-id 56` selects an authentication chain only; the server validates support and market plans determine transaction chains.
 
@@ -87,3 +87,7 @@ Use CLI 0.3.6 or newer for the expanded market categories. Skill response displa
 Business discovery, configuration, preparation and result queries run through Remote MCP. The CLI executes the returned intent reference with its own Session and keeps local keys and recovery journals. `creator`, `operation show`, `skill search` and `mcp grant` have moved out of the CLI. Upgrade cleanup removes only obsolete local grant files; it preserves wallets, Sessions and recovery journals and does not revoke remote OAuth.
 
 Release these instructions after the intent migrations/endpoints and CLI 0.5.0 package are available in the intended environment. Updating the Skill or website is separate from publishing the npm package.
+
+## Session renewal and preserved recovery (CLI 0.5.1)
+
+Use CLI 0.5.1 for direct same-wallet Session renewal guidance and ordinary logout/wallet switching that preserve unfinished recovery journals. Restore the original wallet and matching Account/environment before resuming a saved operation. The CLI no longer maintains a separate local recovery index. `logout --local` clears local authorization and retains wallets/journals while server authorization remains unchanged. PROD login now includes Avalanche (`43114`); read `finch login --help` for supported authentication chains.
