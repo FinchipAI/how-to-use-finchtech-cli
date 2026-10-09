@@ -12,11 +12,29 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.1
+pnpm add --global @finchtech/cli@0.5.2
 finch --version
 ```
 
 CLI 0.5.0 supports new SkillRoot publications and encrypted downloads, including historical encrypted Skills. Upgrade the CLI as well as this Skill; installing these instructions does not upgrade the executable. See [Skill publication and delivery](references/skill.md) for ZIP import and compatibility rules.
+
+## Install this Skill
+
+This repository's root is the Skill directory; install it under the name `finch-market`. In Codex, use the built-in Skill installer with the download method:
+
+```bash
+python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py --repo FinchipAI/how-to-use-finchtech-cli --path . --name finch-market --method download
+```
+
+`--name` is required because the installer otherwise derives the name `.` from `--path .`. Do not use `--method git` for this repository: its sparse checkout of the root omits `references/` and `agents/`.
+
+You can also clone the repository directly:
+
+```bash
+git clone --depth 1 https://github.com/FinchipAI/how-to-use-finchtech-cli ~/.codex/skills/finch-market
+```
+
+Other Harnesses install the same directory under their own Skill root, for example `~/.claude/skills/finch-market`. Start a new session afterwards so the Harness loads the Skill.
 
 ## Authenticated downloads (CLI 0.3.8+)
 
@@ -30,7 +48,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.1
+pnpm add --global @finchtech/cli@0.5.2
 finch --version
 ```
 
@@ -91,3 +109,7 @@ Release these instructions after the intent migrations/endpoints and CLI 0.5.0 p
 ## Session renewal and preserved recovery (CLI 0.5.1)
 
 Use CLI 0.5.1 for direct same-wallet Session renewal guidance and ordinary logout/wallet switching that preserve unfinished recovery journals. Restore the original wallet and matching Account/environment before resuming a saved operation. The CLI no longer maintains a separate local recovery index. `logout --local` clears local authorization and retains wallets/journals while server authorization remains unchanged. PROD login now includes Avalanche (`43114`); read `finch login --help` for supported authentication chains.
+
+## Actionable usage errors, wallet list and network diagnostics (CLI 0.5.2)
+
+CLI 0.5.2 replaces the generic schema message with one naming the rejected option, missing argument or unknown subcommand and the command's usage. Every command already prints JSON; do not add `--json`. Use `finch wallet list` to see the current wallet and registered addresses before `finch wallet use <ADDRESS>`. Failed `finch mcp doctor` network checks report `httpStatus` or `networkErrorCode`; a TLS certificate code usually means a proxy or security product intercepts HTTPS on that machine rather than a Finch outage. Upgrade the installed executable to receive these changes.
