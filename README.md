@@ -12,7 +12,7 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.2
+pnpm add --global @finchtech/cli@0.5.3
 finch --version
 ```
 
@@ -48,7 +48,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.2
+pnpm add --global @finchtech/cli@0.5.3
 finch --version
 ```
 
@@ -113,3 +113,9 @@ Use CLI 0.5.1 for direct same-wallet Session renewal guidance and ordinary logou
 ## Actionable usage errors, wallet list and network diagnostics (CLI 0.5.2)
 
 CLI 0.5.2 replaces the generic schema message with one naming the rejected option, missing argument or unknown subcommand and the command's usage. Every command already prints JSON; do not add `--json`. Use `finch wallet list` to see the current wallet and registered addresses before `finch wallet use <ADDRESS>`. Failed `finch mcp doctor` network checks report `httpStatus` or `networkErrorCode`; a TLS certificate code usually means a proxy or security product intercepts HTTPS on that machine rather than a Finch outage. Upgrade the installed executable to receive these changes.
+
+## Chain-confirmed publication recovery and technical diagnostics (CLI 0.5.3)
+
+CLI 0.5.3 reconciles interrupted Skill publications and version updates against confirmed chain state, skips completed stages, and preserves the original material and wallet journal. Use the returned recovery command with the original wallet and matching Account/environment; purchase and conversion remain receipt-only recovery. The matching gateway and publication checkpoint migration must be deployed before using this recovery.
+
+Connection failures, timeouts, rate limits, and invalid responses have distinct technical codes and secret-safe trace identifiers. Read the resource before retrying a write whose result is unknown. Updating this Skill does not upgrade the installed CLI; check `finch --version` and install 0.5.3 or newer for these changes.
