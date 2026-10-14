@@ -12,7 +12,7 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.3
+pnpm add --global @finchtech/cli@0.5.4
 finch --version
 ```
 
@@ -48,7 +48,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.3
+pnpm add --global @finchtech/cli@0.5.4
 finch --version
 ```
 
@@ -57,6 +57,12 @@ The historical Skill repository remains available only as a migration notice and
 ## Avalanche Skill network (CLI 0.4.1+)
 
 Avalanche C-Chain (`43114`) is the sixth production Skill network. Upgrade the executable to CLI `0.5.0` or newer before creating, acquiring, or managing an Avalanche Skill. Prices and gas use AVAX; transaction chains are independent of CLI login authentication chains. Follow [chain identity](references/skill.md#chain-identity) and preserve the exact Remote MCP plan chain.
+
+## Injective Skills and display languages (CLI 0.5.4+)
+
+Injective EVM (`1776`) is the seventh production Skill network. Use CLI `0.5.4` or newer for its publication, acquisition, management and recovery actions; prices and gas use INJ. Keep the exact chain returned by Remote MCP, independently of the login chain.
+
+CLI `0.5.4` also accepts Simplified Chinese (`zh`) and Traditional Chinese (`zh-TW`) publication plans. Finch translates public display text after publication; the Skill files and chain metadata remain original. Owners can edit and explicitly confirm a translation or regenerate one target language after reviewing the overwrite warning. See [Skill display languages](references/skill.md#skill-display-languages).
 
 ## Source and releases
 

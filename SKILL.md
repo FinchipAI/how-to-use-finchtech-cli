@@ -62,7 +62,7 @@ Read only the reference needed for the selected market:
 
 Do not browse source code, change deployment configuration, or use operator-only infrastructure merely to complete an ordinary marketplace operation.
 
-Use CLI 0.5.1 or newer for authenticated Skill downloads, staged uploads, 30 MiB packages, and authorized external-media manifests. Require CLI 0.5.3 or newer for chain-confirmed publication/version recovery and the new technical diagnostics. A successful doctor result covers the CLI Session and MCP discovery only; Harness OAuth remains `not_checked`. Verify the mounted MCP identity against `finch status`; use the Harness's native login flow if its OAuth is missing or expired. See [references/skill.md](references/skill.md) before retrying publication failures. Updating this Skill does not upgrade the installed CLI.
+Use CLI 0.5.1 or newer for authenticated Skill downloads, staged uploads, 30 MiB packages, and authorized external-media manifests. Require CLI 0.5.3 or newer for chain-confirmed publication/version recovery and the new technical diagnostics. Require CLI 0.5.4 or newer for Injective Skill actions or explicit Chinese source-language publication plans; follow [references/skill.md](references/skill.md) for chain and display-language rules. A successful doctor result covers the CLI Session and MCP discovery only; Harness OAuth remains `not_checked`. Verify the mounted MCP identity against `finch status`; use the Harness's native login flow if its OAuth is missing or expired. See [references/skill.md](references/skill.md) before retrying publication failures. Updating this Skill does not upgrade the installed CLI.
 
 ## Market category compatibility (CLI 0.3.6+)
 
