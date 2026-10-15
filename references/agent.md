@@ -1,5 +1,11 @@
 # Agent Market
 
+## Chain identity
+
+Treat each Agent deployment as chain-scoped. PROD plans can use Base (`8453`), Injective EVM (`1776`) or Avalanche C-Chain (`43114`); TEST uses its reviewed Base Sepolia deployment (`84532`). Preserve the exact chain, deployment and operation ID returned by Remote MCP through preparation, signing, transaction submission, confirmation and recovery. Never select a chain from the login profile or from a contract address alone.
+
+Before an Avalanche Agent wallet action, require `finch --version` to report CLI `0.5.5` or newer. Older executables can reject an otherwise valid plan before reaching RPC or reject the non-Base purchase response. Upgrade while retaining wallet and recovery material. Agent purchases use the chain's reviewed USDC token; Avalanche gas uses AVAX and Injective gas uses INJ. A successful upgrade does not authorize a purchase, change Task creation policy or replace the user's approval of a concrete signing request. After an uncertain submission, re-read the same operation and use its returned recovery action instead of starting another purchase.
+
 ## Creator
 
 Use scopes `agent_market:merchant:read`, `agent_market:merchant:write`, and `agent_market:operations:read`.

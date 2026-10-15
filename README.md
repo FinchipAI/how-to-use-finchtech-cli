@@ -12,7 +12,7 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.4
+pnpm add --global @finchtech/cli@0.5.5
 finch --version
 ```
 
@@ -48,7 +48,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.4
+pnpm add --global @finchtech/cli@0.5.5
 finch --version
 ```
 
@@ -57,6 +57,10 @@ The historical Skill repository remains available only as a migration notice and
 ## Avalanche Skill network (CLI 0.4.1+)
 
 Avalanche C-Chain (`43114`) is the sixth production Skill network. Upgrade the executable to CLI `0.5.0` or newer before creating, acquiring, or managing an Avalanche Skill. Prices and gas use AVAX; transaction chains are independent of CLI login authentication chains. Follow [chain identity](references/skill.md#chain-identity) and preserve the exact Remote MCP plan chain.
+
+## Avalanche Agent transactions (CLI 0.5.5+)
+
+Upgrade to CLI `0.5.5` or newer before executing Avalanche C-Chain (`43114`) Agent wallet actions returned by Remote MCP. Agent purchases use the chain's reviewed USDC token and gas uses AVAX. Preserve the plan's chain and operation ID independently of the login chain, and retain unfinished recovery journals during the upgrade. The same release accepts the reviewed Injective (`1776`) purchase-response contract. See [Agent chain identity](references/agent.md#chain-identity). Avalanche Task creation remains closed; upgrading the CLI does not change that server policy.
 
 ## Injective Skills and display languages (CLI 0.5.4+)
 
