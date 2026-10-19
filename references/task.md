@@ -1,5 +1,9 @@
 # Task Market
 
+## Chain identity
+
+The reviewed production Task manifest enables creation on Base (`8453`), Injective (`1776`) and Avalanche C-Chain (`43114`); TEST uses Base Sepolia (`84532`). Read the available Task deployment and admission from the server and preserve the exact returned chain through preparation, funding, awards, reclaim and recovery. An authentication chain or CLI upgrade does not select the business chain. Report an actual completed action only after its wallet and server confirmation evidence.
+
 ## Requester
 
 Use `task_market:discover`, `task_market:requester:read`, and `task_market:requester:write` as needed.
@@ -11,6 +15,12 @@ In a mounted Finch MCP harness, use these exact requester tools to create and pr
 3. Re-read the Task and require the expected open and funded state.
 4. Read the review board. For each user-authorized decision, prepare review through MCP, repeat the MCP/CLI identity comparison, show the award summary, and run the returned `finch task award-sign <TASK_ID> --intent <INTENT_ID>` action. The command records one EIP-712 signature batch and confirms review atomically; the runtime broadcasts the award. Do not create another signature batch after an unknown response. Verify approved submission, participation, award operation, fee, and remaining pool.
 5. Reclaim only when the user explicitly requests it and the Task is eligible: prepare through MCP, repeat the identity comparison, show the transaction summary, and run the returned `finch task reclaim-submit <TASK_ID> --intent <INTENT_ID>` action. It broadcasts once, checkpoints the hash, and confirms atomically. Do not close or reclaim a Task merely to clean up a run.
+
+### Original funding and reclaim recovery (CLI 0.5.6+)
+
+CLI 0.5.6 saves original signed bytes/hash/nonce before Task approval, pool funding, revocation and reclaim broadcast. A failed checkpoint save prevents sending. Use only the returned `finch task recover <TASK_ID> <publish|award|reclaim>` action under the original Account, wallet and environment. It preserves the frozen funding amount and original stage evidence, checks the original transaction and can replay only those same saved bytes when absent. A missing receipt is insufficient to rebuild or re-sign a payment. Old hash-only records retain their existing receipt/confirmation limits. Award recovery reuses its saved signatures; do not generate another batch.
+
+A confirmed reverted receipt is a failed transaction with the original hash and any allowance-cleanup status retained. Follow the exact returned guidance for saved cleanup or unsent cleanup; successful cleanup ends recovery. Keep journals and reconcile the existing operation before preparing a separate new business action.
 
 ### Merchant review, settlement and regional admission
 
@@ -29,6 +39,10 @@ For an explicit requester cancellation, use the mounted `task_market_task_prepar
 For persisted or externally paid awards, recover the existing receipt instead of generating a second signature/payment. Separately paid or partially paid batches may require restoring each submission separately; obey the returned recovery error. Re-read the review board after cancellation or recovery before preparing new awards.
 
 ## Participant
+
+New Tasks include two fixed required official Goals: follow @FinchTechAI and post the current Task using its English/Chinese template. They are separate from the merchant quota; historical Tasks and existing drafts keep their original Goals. Complete official and merchant requirements in any order. Only real X verification completes official Goals, including accounts already following Finch; outages and manual approval cannot replace it.
+
+The mounted MCP tools do not expose individual Goal verification or multi-goal final submission. Use the same Account's Web Task page to verify the official Goals, and to submit a multi-goal Task. A classic Task retains its original content/proof submission through `task_market_task_submit`, after its official Goals have been verified on Web. Compare Account and environment before moving between clients. Do not invent Goal tools or switch identities to satisfy the requirements.
 
 Use `task_market:discover`, `task_market:participant:read`, and `task_market:participant:write` as needed.
 

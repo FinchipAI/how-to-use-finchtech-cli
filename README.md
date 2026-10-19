@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Required CLI version: `0.5.1` or newer for Session-owned market actions
+- Current CLI release: `0.5.6`; required for Skill publication, version updates and delivery with the manifest/envelope gateway. Session-owned market actions retain their feature-specific minimum versions below.
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.5
+pnpm add --global @finchtech/cli@0.5.6
 finch --version
 ```
 
@@ -48,7 +48,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.5
+pnpm add --global @finchtech/cli@0.5.6
 finch --version
 ```
 
@@ -60,7 +60,7 @@ Avalanche C-Chain (`43114`) is the sixth production Skill network. Upgrade the e
 
 ## Avalanche Agent transactions (CLI 0.5.5+)
 
-Upgrade to CLI `0.5.5` or newer before executing Avalanche C-Chain (`43114`) Agent wallet actions returned by Remote MCP. Agent purchases use the chain's reviewed USDC token and gas uses AVAX. Preserve the plan's chain and operation ID independently of the login chain, and retain unfinished recovery journals during the upgrade. The same release accepts the reviewed Injective (`1776`) purchase-response contract. See [Agent chain identity](references/agent.md#chain-identity). Avalanche Task creation remains closed; upgrading the CLI does not change that server policy.
+Upgrade to CLI `0.5.5` or newer before executing Avalanche C-Chain (`43114`) Agent wallet actions returned by Remote MCP. Agent purchases use the chain's reviewed USDC token and gas uses AVAX. Preserve the plan's chain and operation ID independently of the login chain, and retain unfinished recovery journals during the upgrade. The same release accepts the reviewed Injective (`1776`) purchase-response contract. See [Agent chain identity](references/agent.md#chain-identity). The reviewed production Task manifest enables creation on Injective (`1776`) and Avalanche (`43114`); follow the server-offered deployment and Task admission policy. See [Task chain identity](references/task.md#chain-identity).
 
 ## Injective Skills and display languages (CLI 0.5.4+)
 
@@ -126,6 +126,14 @@ CLI 0.5.2 replaces the generic schema message with one naming the rejected optio
 
 ## Chain-confirmed publication recovery and technical diagnostics (CLI 0.5.3)
 
-CLI 0.5.3 reconciles interrupted Skill publications and version updates against confirmed chain state, skips completed stages, and preserves the original material and wallet journal. Use the returned recovery command with the original wallet and matching Account/environment; purchase and conversion remain receipt-only recovery. The matching gateway and publication checkpoint migration must be deployed before using this recovery.
+CLI 0.5.3 reconciles interrupted Skill publications and version updates against confirmed chain state, skips completed stages, and preserves the original material and wallet journal. Use the returned recovery command with the original wallet and matching Account/environment; CLI 0.5.3 purchase and conversion used receipt-only recovery; CLI 0.5.6 adds the original-transaction recovery described below. The matching gateway and publication checkpoint migration must be deployed before using this recovery.
 
 Connection failures, timeouts, rate limits, and invalid responses have distinct technical codes and secret-safe trace identifiers. Read the resource before retrying a write whose result is unknown. Updating this Skill does not upgrade the installed CLI; check `finch --version` and install 0.5.3 or newer for these changes.
+
+## Original-transaction recovery and Skill delivery contract (CLI 0.5.6)
+
+Use CLI 0.5.6 for the matching Skill gateway. Delivery uses `manifestURI` and `envelope`; publication/version recovery preserves existing Browser records and strictly migrates CLI v4–v7 journals to v8 without replacing their original material or repeating completed transactions. An older executable receives `SKILL_CLI_UPGRADE_REQUIRED` (HTTP 426): upgrade the executable and retry the original command. For `SKILL_DELIVERY_PLAN_REFRESH_REQUIRED` (HTTP 409), request a fresh MCP download plan for the same chain, Skill and version; no new purchase is required.
+
+CLI 0.5.6 records original signed bytes/hash/nonce before broadcasting Agent and Task money transactions and Skill purchase/conversion. If the outcome is unknown, preserve the journal and follow the exact returned recovery command. Only the CLI may verify the original transaction and replay its same saved bytes when absent; never rebuild or re-sign a payment. Old hash-only records keep their receipt/confirmation limitations. A confirmed reverted receipt is a failed transaction, with the original hash and any allowance-cleanup status retained; do not loop through another payment. See the corresponding market reference for recovery details.
+
+Keep the original Account, wallet and environment during upgrade and renewal. CLI login, native MCP authorization and a mounted `identity_actor_get` matching `finch status` remain separate checks. Installing this Skill does not upgrade the executable. During the announced CLI/gateway cutover window, wait until both matching artifacts are available before Skill publication, version recovery or delivery.

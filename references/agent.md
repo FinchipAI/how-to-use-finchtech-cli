@@ -4,7 +4,7 @@
 
 Treat each Agent deployment as chain-scoped. PROD plans can use Base (`8453`), Injective EVM (`1776`) or Avalanche C-Chain (`43114`); TEST uses its reviewed Base Sepolia deployment (`84532`). Preserve the exact chain, deployment and operation ID returned by Remote MCP through preparation, signing, transaction submission, confirmation and recovery. Never select a chain from the login profile or from a contract address alone.
 
-Before an Avalanche Agent wallet action, require `finch --version` to report CLI `0.5.5` or newer. Older executables can reject an otherwise valid plan before reaching RPC or reject the non-Base purchase response. Upgrade while retaining wallet and recovery material. Agent purchases use the chain's reviewed USDC token; Avalanche gas uses AVAX and Injective gas uses INJ. A successful upgrade does not authorize a purchase, change Task creation policy or replace the user's approval of a concrete signing request. After an uncertain submission, re-read the same operation and use its returned recovery action instead of starting another purchase.
+Before an Avalanche Agent wallet action, require `finch --version` to report CLI `0.5.5` or newer. Older executables can reject an otherwise valid plan before reaching RPC or reject the non-Base purchase response. Upgrade while retaining wallet and recovery material. Agent purchases use the chain's reviewed USDC token; Avalanche gas uses AVAX and Injective gas uses INJ. A successful upgrade does not authorize a purchase or replace the user's approval of a concrete signing request. Task creation is separately enabled for Injective and Avalanche in the reviewed production manifest; follow the server-offered deployment and [Task admission](task.md#chain-identity). After an uncertain submission, re-read the same operation and use its returned recovery action instead of starting another purchase.
 
 ## Creator
 
@@ -189,6 +189,12 @@ For sponsored avatar generation, read `agent_market_avatar_video_configuration_g
 ### AgentOn follow-up recovery
 
 While an AgentOn task is `input_required`, keep polling the same task and operation: the provider may advance without another answer. Supply follow-up content only when the user provides it. After an answer is staged or accepted, preserve its request identity and read the same operation before attempting another answer. Optional message or structured context belongs to that follow-up; it does not create a new task or extend the original deadline. Interim text or JSON is progress, not a terminal result or a generated Artifact. Require the terminal result and, for generation, the promised Artifact metadata before reporting completion.
+
+### Original-transaction recovery (CLI 0.5.6+)
+
+CLI 0.5.6 saves the original signed bytes/hash/nonce before each approval, purchase or revocation broadcast. After an unknown result, retain the journal and use the exact returned recovery command for that operation. It checks the original transaction and can replay only its same saved bytes when absent; do not create a replacement purchase, choose another nonce or re-sign a payment. New journals preserve minimal original authorization, allowing already-signed stages to be reconciled after authorization expiry under the same Account, wallet and environment. They cannot sign a missing purchase or cleanup after expiry. Older journals lacking that authorization keep their server-backed limitations and may require support.
+
+A confirmed reverted receipt is a failed transaction; read its original hash and the separate allowance-cleanup status. Successful cleanup ends recovery. Unknown cleanup permits recovery of only the saved cleanup transaction; unsent cleanup or invalid evidence must follow the returned guidance. Preserve terminal journals for reconciliation and query Call Rights through MCP after server confirmation.
 
 ### Buyer custody commands
 
