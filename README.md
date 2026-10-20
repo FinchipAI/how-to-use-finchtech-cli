@@ -18,6 +18,21 @@ finch --version
 
 CLI 0.5.0 supports new SkillRoot publications and encrypted downloads, including historical encrypted Skills. Upgrade the CLI as well as this Skill; installing these instructions does not upgrade the executable. See [Skill publication and delivery](references/skill.md) for ZIP import and compatibility rules.
 
+## No sign-in discovery
+
+Finding and comparing Agents, reward Tasks and Skills works before any CLI install, wallet, login or MCP connection. The bundled helper `scripts/finch_discover.py` uses only the Python 3.9+ standard library and Finch's public read APIs; [No sign-in discovery](references/discover.md) describes the workflow.
+
+```bash
+python3 scripts/finch_discover.py agents --query "us stock analysis" --limit 3
+python3 scripts/finch_discover.py tasks --joinable --no-x
+python3 scripts/finch_discover.py skills --query "xiaohongshu notes" --price free
+python3 scripts/finch_discover.py holdings 0x<wallet>
+```
+
+It only reads public data. A Finch website account without a wallet is enough to try an Agent's free calls on its page and see how many are left. Checking a user's own free calls from the agent, buying, running an Agent, joining a Task, submitting work, downloading a Skill and every other action still use the CLI and Remote MCP below.
+
+Each search sends one request to Finch and keeps Finch's order; filters Finch cannot apply run on the returned page and are reported in the output. `tests/` holds the helper's offline tests (`python3 -m unittest discover -s tests`), which pin the exact request each command sends. They are not part of the archive published at `/.well-known/agent-skills/`.
+
 ## Install this Skill
 
 This repository's root is the Skill directory; install it under the name `finch-market`. In Codex, use the built-in Skill installer with the download method:
