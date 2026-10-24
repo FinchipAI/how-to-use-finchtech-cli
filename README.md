@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Current CLI release: `0.5.6`; required for Skill publication, version updates and delivery with the manifest/envelope gateway. Session-owned market actions retain their feature-specific minimum versions below.
+- Current CLI release: `0.5.7`; required for ordinary file uploads, Skill common-upload publication/recovery and Task workbook commands. The manifest/envelope gateway and original signed-transaction recovery retain their historical CLI 0.5.6 minimum. Session-owned market actions retain their feature-specific minimum versions below.
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.6
+pnpm add --global @finchtech/cli@0.5.7
 finch --version
 ```
 
@@ -63,7 +63,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.5.6
+pnpm add --global @finchtech/cli@0.5.7
 finch --version
 ```
 
@@ -144,6 +144,14 @@ CLI 0.5.2 replaces the generic schema message with one naming the rejected optio
 CLI 0.5.3 reconciles interrupted Skill publications and version updates against confirmed chain state, skips completed stages, and preserves the original material and wallet journal. Use the returned recovery command with the original wallet and matching Account/environment; CLI 0.5.3 purchase and conversion used receipt-only recovery; CLI 0.5.6 adds the original-transaction recovery described below. The matching gateway and publication checkpoint migration must be deployed before using this recovery.
 
 Connection failures, timeouts, rate limits, and invalid responses have distinct technical codes and secret-safe trace identifiers. Read the resource before retrying a write whose result is unknown. Updating this Skill does not upgrade the installed CLI; check `finch --version` and install 0.5.3 or newer for these changes.
+
+## File uploads, Task workbooks and funding guidance (CLI 0.5.7)
+
+Use CLI 0.5.7 or newer for server-issued `finch upload --ref REF --path FILE` actions and private Task workbook export/offline selection parsing. Skill publication, version and cover commands use the same shared upload module internally, preserving generated package bytes, encryption keys and original references across recovery; continue the original Skill command with the original material. Ready uploaded bytes still need their separate business save/submit step. Task workbook selection still needs preview, explicit merchant confirmation and the existing award-sign/confirmation flow.
+
+The same release reports fresh Task publication gas/USDC prerequisites and safe RPC phase/method details. Successful Task confirmation clears the local recovery record; a later recover command explains that absence and directs uncertain outcomes to the original Account’s operation query, without repeating payment. These changes require the installed executable; updating this Skill or the website is separate.
+
+Account username onboarding is available on TEST and production where the deployed service enables it. Read `identity_profile_get` after matching identities; only an explicit user choice authorizes keeping or changing the saved name, with the separate `account:profile:write` scope. This server capability needs no new CLI version.
 
 ## Original-transaction recovery and Skill delivery contract (CLI 0.5.6)
 
