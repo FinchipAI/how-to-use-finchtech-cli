@@ -72,6 +72,7 @@ Read only the reference needed for the selected market:
 
 - Finding and comparing Agents, reward Tasks and Skills without signing in: [references/discover.md](references/discover.md)
 - Agent publishing/recovery, validation, retirement, personal Library, free eligibility, files, reviews, purchase and execution: [references/agent.md](references/agent.md)
+- A2A client setup, dedicated tokens, Direct calls and original Task recovery: [A2A Direct clients](references/agent.md#a2a-direct-clients-cli-060). Require CLI 0.6.0 or newer and matching deployed service support. Use the same verified CLI Account, wallet and environment; discovery, registration and purchases remain on the existing CLI-MCP path.
 - Task publication, participation, local screenshot/video uploads, saved Goal proof and recovery, review, awards, and reclaim: [references/task.md](references/task.md). Local proof uploads require CLI 0.5.7 or newer for `finch upload --ref REF --path FILE`. Check installed command help; a Skill or service update does not upgrade the executable.
 - Skill file or folder publication, presentation, Manage, acquisition, conversion, delivery, and download: [references/skill.md](references/skill.md)
 

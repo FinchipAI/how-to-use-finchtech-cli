@@ -7,16 +7,24 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Current CLI release: `0.5.7`; required for ordinary file uploads, Skill common-upload publication/recovery and Task workbook commands. The manifest/envelope gateway and original signed-transaction recovery retain their historical CLI 0.5.6 minimum. Session-owned market actions retain their feature-specific minimum versions below.
+- Current CLI release: `0.6.0`; adds dedicated A2A Direct tokens and paid Calls delivery-recovery states, and retains ordinary file uploads, Skill common-upload publication/recovery and Task workbook commands from 0.5.7. The manifest/envelope gateway and original signed-transaction recovery retain their historical CLI 0.5.6 minimum. Session-owned market actions retain their feature-specific minimum versions below.
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.5.7
+pnpm add --global @finchtech/cli@0.6.0
 finch --version
 ```
 
 CLI 0.5.0 supports new SkillRoot publications and encrypted downloads, including historical encrypted Skills. Upgrade the CLI as well as this Skill; installing these instructions does not upgrade the executable. See [Skill publication and delivery](references/skill.md) for ZIP import and compatibility rules.
+
+## A2A Direct clients (CLI 0.6.0+)
+
+Remote MCP remains the first discovery, purchase and management path. An A2A 1.0 JSON-RPC client can invoke an active Direct service Version and read its own results after normal CLI login and `finch a2a token`. It requires CLI 0.6.0 or newer and the matching deployed service. Use the returned private bearer file only for the exact same-origin Finch A2A interface; never print or share it. A2A uses eligible free calls first, then already purchased Calls; it does not buy Calls or automatically approve paid use. AgentOn continuation, cancel, streaming and push are unsupported. Read [A2A Direct setup and recovery](references/agent.md#a2a-direct-clients-cli-060) before configuring a client. Updating this Skill does not upgrade the installed CLI.
+
+## Paid Calls delivery recovery (CLI 0.6.0+)
+
+When a verified Agent payment is saved but Calls delivery is still processing, the CLI keeps the original order, payment hash and recovery journal. It distinguishes delivered Calls from processing, support required and existing refund states. Recover that same order rather than paying again; these states require CLI 0.6.0 or newer and the matching deployed service. See [Paid Calls recovery](references/agent.md#paid-calls-delivery-recovery-cli-060). A pending state does not promise an automatic refund.
 
 ## No sign-in discovery
 
