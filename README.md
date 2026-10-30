@@ -101,6 +101,8 @@ The website also serves Skill resources built from its deployed maintenance sour
 
 ## MCP connection without a Browser (CLI 0.4.0+)
 
+Normal Agent setup requests the full business permission set currently advertised by Finch during native OAuth registration and authorization; an explicit user restriction selects a narrower set. Follow the [connection permission policy](SKILL.md#login-and-mcp-connection) and [native client setup](references/mcp-clients.md) before starting OAuth, and verify the permissions actually granted. The policy applies to new and existing Accounts and wallets. Updating this Skill does not expand an existing grant through refresh.
+
 CLI 0.4.0 lets an Agent connect its MCP client to Finch without a Browser. `finch mcp connect -- <MCP_CLIENT_LOGIN_COMMAND...>` runs the client's own login command and approves the one authorization URL it prints; `finch mcp authorize --stdin` approves a URL the Agent copied unchanged; the command shown on the Finch authorization page still works when neither is possible. Loopback callbacks are delivered directly to the client on this machine, and HTTPS callbacks still open in the Browser. The Finch authorization server now returns the RFC 9207 `iss` parameter and refuses older CLI releases with an upgrade instruction. See `SKILL.md` for the order in which to try these entry points.
 
 ## Diagnostic and interoperability fixes (CLI 0.3.9+)
@@ -159,7 +161,7 @@ Use CLI 0.5.7 or newer for server-issued `finch upload --ref REF --path FILE` ac
 
 The same release reports fresh Task publication gas/USDC prerequisites and safe RPC phase/method details. Successful Task confirmation clears the local recovery record; a later recover command explains that absence and directs uncertain outcomes to the original Account’s operation query, without repeating payment. These changes require the installed executable; updating this Skill or the website is separate.
 
-Account username onboarding is available on TEST and production where the deployed service enables it. Read `identity_profile_get` after matching identities; only an explicit user choice authorizes keeping or changing the saved name, with the separate `account:profile:write` scope. This server capability needs no new CLI version.
+Account username onboarding is available on TEST and production where the deployed service enables it. Read `identity_profile_get` after matching identities; only an explicit user choice authorizes keeping or changing the saved name. The required `account:profile:write` scope is included in normal full-permission setup above. This server capability needs no new CLI version.
 
 ## Original-transaction recovery and Skill delivery contract (CLI 0.5.6)
 

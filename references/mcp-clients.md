@@ -4,6 +4,8 @@ Use the section for the application the user is connecting. These are operationa
 
 First verify `finch status`; create a wallet only with the user's explicit approval and log in with `finch login --chain-id <SUPPORTED_AUTH_CHAIN_ID>` if needed. Existing explicit approval in the conversation counts. Then follow the authorization fallbacks in SKILL.md in order. A command requiring interactive answers must stay in an interactive terminal; `finch mcp connect` captures a login command's output but does not answer its prompts.
 
+Before using an add/login command below, apply the [connection permission policy](../SKILL.md#login-and-mcp-connection) through the installed client's native OAuth scope options. These examples select the server and transport; use client help/settings to supply the selected permissions for both registration and authorization rather than inventing flags. Keep the resulting authorization URL unchanged when passing it to Finch CLI.
+
 ## Codex
 
 Adding an OAuth server can start authorization immediately. For a new entry, wrap that operation:
@@ -86,4 +88,18 @@ Alternatively use `goose configure` → Add Extension → Remote Extension (Stre
 
 ## Verify the result
 
-Call the current application's mounted `identity_actor_get` tool and compare `accountId`, wallet address, and environment with `finch status`. A fresh native session may be needed to load newly added tools; reuse its saved configuration and authorization. If only configuration or OAuth is complete, say so and identify what remains unverified. Report an actual client/protocol error instead of inventing an adapter or switching applications.
+Verify the selected permission set as described in the [connection permission policy](../SKILL.md#login-and-mcp-connection). Call the current application's mounted `identity_actor_get` tool and compare `accountId`, wallet address, and environment with `finch status`. A fresh native session may be needed to load newly added tools; reuse its saved configuration and authorization. If only configuration or OAuth is complete, say so and identify what remains unverified. Report an actual client/protocol error instead of inventing an adapter or switching applications.
+
+## Connection troubleshooting
+
+### The client's connection page says required parameters are missing
+
+Check the actual URL received by that page, including the parsed query values. Parameter names being present does not prove their contents survived generation or copying. If the client packages configuration in encoded data, decode it locally in memory according to that client's format and validate its JSON and required fields. Keep the URL and decoded session material private. A damaged value needs a correctly generated request from the client's native flow. Let that flow retain its matching PKCE/state and use the resulting authorization URL unchanged with Finch CLI.
+
+### CLI approval succeeded but the Finch authorization page did not change
+
+Finch's `/oauth/authorize` GET page is a static instruction page. CLI approval does not update it, and it has no completion or return-to-client button. Check the CLI's complete secret-safe result and the native login that started the request, then follow [Verify the result](#verify-the-result).
+
+### A remote or headless host could not finish the HTTPS callback
+
+For an HTTPS callback, Finch CLI opens the verified callback in the graphical browser on the machine running that CLI. `BROWSER_OPEN_FAILED` reports a browser-launch failure; a successful launch only confirms that the browser-opening command exited successfully. An HTTP 200 containing a generic login page also does not verify that the MCP client exchanged the code or connected. Check which machine/browser handled the callback and whether the original native login is still running. If the environment cannot provide the supported browser handoff, report that boundary before another approval. Use the documented native CLI/browser path, preserving the intended Account, wallet, PKCE and state; keep completion URLs and codes inside that path. If the original login has exited or its request expired, start a fresh complete native login. Repeated approvals or HTTP requests to the callback are not a substitute for this handoff.
