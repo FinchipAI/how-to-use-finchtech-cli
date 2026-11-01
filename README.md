@@ -7,12 +7,12 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- Current CLI release: `0.6.0`; adds dedicated A2A Direct tokens and paid Calls delivery-recovery states, and retains ordinary file uploads, Skill common-upload publication/recovery and Task workbook commands from 0.5.7. The manifest/envelope gateway and original signed-transaction recovery retain their historical CLI 0.5.6 minimum. Session-owned market actions retain their feature-specific minimum versions below.
+- Current CLI release: `0.7.0`; adds Merchant earnings claims with `finch claim submit` and original signed-transaction recovery, and excludes server configuration and maintenance metadata from the public package. It retains A2A Direct tokens, paid Calls delivery recovery, ordinary file uploads, Skill publication/recovery and Task workbook commands. Merchant claims require the matching deployed service, the Account's bound wallet and the separately requested `agent_market:merchant:claim` permission. Existing feature-specific minimum versions below remain unchanged.
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.6.0
+pnpm add --global @finchtech/cli@0.7.0
 finch --version
 ```
 

@@ -855,7 +855,7 @@ class Envelope(unittest.TestCase):
                 self.assertEqual(refused.exception.code, "INVALID_INPUT")
 
     def test_base_url_is_limited_to_finch(self):
-        for value, allowed in (("https://staging.finchtech.ai", True), ("http://localhost:3000", True),
+        for value, allowed in (("https://fixture.finchtech.ai", True), ("http://localhost:3000", True),
                                ("https://evil.example", False), ("https://finchtech.ai.evil.com", False)):
             with self.subTest(value=value):
                 os.environ["FINCH_BASE_URL"] = value
