@@ -182,7 +182,16 @@ Claims need the separately requested `agent_market:merchant:claim` permission, t
 4. Ask the user to run the returned `cliCommand` (`finch claim submit <SETTLEMENT_ID>`) themselves within that time. The CLI refuses a claim that does not pay the installed wallet from the reviewed Vault and token, saves and reports the signed transaction before broadcasting, and never signs the same claim again while a transaction for it, including one sent from Listing Center, may still pay.
 5. Check the result with `agent_market_merchant_claim_status_get` or `finch claim confirm <SETTLEMENT_ID>`; both are safe to repeat and never move money. `completed` means paid; `cancelled` means the authorization ended unpaid and the earnings are claimable again; `attention` means Finch support must look, so do not retry; `awaiting` means the wallet or chain has not finished. If the CLI was interrupted, rerun the same `finch claim submit`; never prepare a new claim to replace one that is still awaiting.
 
+### AgentOn A2A clients (CLI 0.7.1+)
+
+AgentOn A2A is enabled on TEST and closed in production. CLI 0.7.1 adds the separate opt-in `finch a2a token --agenton`; the previously published 0.7.0 and earlier packages do not include it. Until official npm publication is verified, use an approved candidate artifact. Check `finch --version`, require `finch a2a token --help` to show `--agenton`, and verify the selected environment's deployed Card advertises the mode before configuring the client.
+
+Use the same verified CLI Account, wallet and environment as the CLI-MCP workflow below. AgentOn credentials are saved separately from Direct-only credentials and carry the explicit AgentOn invoke scope. CLI-MCP handles discovery and Calls purchases; the token authorizes A2A calls and result access, while server eligibility decides free or purchased Calls admission. Issuing it does not buy Calls or confirm paid use.
+
+Read the selected Card's `documentationUrl` and contract for `{offerId,input,quantity?}` for `conversation_turn`, `task` or `generation` Offers. Preserve the original message ID and exact request after an unknown response. Answer an input-required Task with a new message ID, the original Task ID and its current `{inputToken,content}`; this continues the existing call and its reservation. Download returned file Parts only from the same Finch origin with the A2A bearer. Read the original Task to a terminal result before reporting completion. The Direct-only limits below apply to Direct credentials.
+
 ### A2A Direct clients (CLI 0.6.0+)
+
 
 Use this branch when the user explicitly wants an A2A client. Remote MCP remains first for discovery, purchases and management. A2A is a Direct invocation and result-query channel under the same CLI identity, not another registration or purchasing flow. It requires the official CLI 0.6.0 or newer and matching deployed service support. Upgrade only under the user's installation approval, retaining the original wallet and recovery material.
 
