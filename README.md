@@ -7,13 +7,14 @@ The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work 
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
-- CLI release target: `0.7.1`; adds explicit AgentOn A2A authorization with `finch a2a token --agenton`. Official npm publication is a separate step: use the installation command below after that release is verified, and check `finch a2a token --help`. Previously published `0.7.0` does not include the flag. AgentOn A2A is enabled on TEST and remains closed in production; installation alone does not open it. Read [AgentOn A2A setup](references/agent.md#agenton-a2a-clients-cli-071).
+- CLI release target: `0.7.2`; fixes parsing of valid Task selection workbooks containing hyperlinks or formatted tables and reports the row number when a checked row lacks a final submission or wallet. Official npm publication is a separate step: use the installation command below after that release is verified.
+- It retains 0.7.1's explicit AgentOn A2A authorization with `finch a2a token --agenton`. Check `finch a2a token --help`; 0.7.0 and earlier do not include the flag. AgentOn A2A is enabled on TEST and remains closed in production; installation alone does not open it. Read [AgentOn A2A setup](references/agent.md#agenton-a2a-clients-cli-071).
 - It retains 0.7.0's Merchant earnings claims and original signed-transaction recovery, public package boundary, A2A Direct tokens, paid Calls delivery recovery, ordinary file uploads, Skill publication/recovery and Task workbook commands. Merchant claims require the matching deployed service, the Account's bound wallet and the separately requested `agent_market:merchant:claim` permission. Existing feature-specific minimum versions below remain unchanged.
 - Primary command: `finch` (`finchtech` is only a compatibility alias)
 - Remote MCP: `https://www.finchtech.ai/mcp`
 
 ```bash
-pnpm add --global @finchtech/cli@0.7.1
+pnpm add --global @finchtech/cli@0.7.2
 finch --version
 ```
 
@@ -72,7 +73,7 @@ Remove the legacy package before installing the current CLI so that old command 
 
 ```bash
 npm uninstall --global finchip-cli
-pnpm add --global @finchtech/cli@0.7.1
+pnpm add --global @finchtech/cli@0.7.2
 finch --version
 ```
 
