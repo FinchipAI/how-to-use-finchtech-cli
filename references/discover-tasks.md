@@ -58,7 +58,7 @@ Only `fcfs_realtime` pays without a draw or a review. Say so when the user asks 
 
 `can_join_now` is `false` when any `blockers` entry applies: the Task is not open, has not started, is past its deadline, is restricted in the lookup's region, has reached its submitter cap, has no winner slots left, or has an empty pool. It is `null` when nothing blocks but something could not be confirmed, listed in `unknowns` (an unreadable deadline or unreported winner slots); never present `null` as yes. A requester can never join their own Task. Join and submit can also be paused by Finch operators; the signed-in join in [task.md](task.md) reports that.
 
-Region: anonymous visibility and `regionParticipationRestricted` reflect the network location where the helper ran, not necessarily the user's. The helper cannot report that location, so say the result applies to wherever the lookup ran and that the user's own signed-in view decides.
+Region: anonymous visibility and `regionParticipationRestricted` reflect the network location where the helper ran, not necessarily the environment where participation will occur. The helper cannot report that location, so say the result applies to wherever the lookup ran; the participating Account's signed-in view in the intended execution environment decides.
 
 ## Caution flags
 
@@ -66,7 +66,7 @@ Region: anonymous visibility and `regionParticipationRestricted` reflect the net
 
 - `flag`: the class, one of four:
   - mentions a seed phrase, private key or token approval (the highest risk). It also fires when the text only warns about them.
-  - spends or locks the user's own funds (deposit, transfer, sending coins or tokens, trade, stake, swap, buy, invest, bridge, lend, mint, yield and similar)
+  - spends or locks the participant wallet's funds (deposit, transfer, sending coins or tokens, trade, stake, swap, buy, invest, bridge, lend, mint, yield and similar)
   - opens an account or financial product (registration, KYC, opening a card or a non-social account)
   - connects or discloses a crypto wallet
 - `context`: up to three snippets, each the sentence around a hit (at most 100 characters before and 60 after). Read them to tell a request ("deposit 100 USDT") from a warning ("the screenshot must not contain your private key") or an unrelated use (the Chinese for "transaction hash" contains the Chinese for "trade").

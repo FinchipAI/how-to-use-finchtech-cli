@@ -87,9 +87,9 @@ Before saving source edits, explain that both other languages' edits and confirm
 
 ### Related Skills and Referenced By
 
-A Skill's detail page lists up to 12 Related Skills chosen by its owner. Set them with `skill_market_related_skills_update` for the exact `(chainId, skillId)`; it writes immediately, off chain, and needs no `finch` action, signature, or gas. The list is replaced whole and in display order: read the current `relatedSkills` from `skill_market_manage_get`, then send the complete list you want; an empty list clears it. Each entry is a market card id: `skill_protocol_v3:<chainId>:<skillId>` for a V3 Skill (build it from a `skill_market_skills_list` result), or `legacy:<chainId>:<decimal uint160 of the Chip address>`. The Skill itself, duplicates, and ids the market does not currently list are refused; `RELATED_SKILL_NOT_LISTED` names the ids to drop or correct.
+A Skill's detail page lists up to 12 Related Skills chosen by its owner. Set them with `skill_market_related_skills_update` for the exact `(chainId, skillId)`; it writes immediately, off chain, and needs no `finch` action, signature, or gas. The list is replaced whole and in display order: read the current `relatedSkills` from `skill_market_manage_get`, then send the complete updated list for the Skill being managed; an empty list clears it. Each entry is a market card id: `skill_protocol_v3:<chainId>:<skillId>` for a V3 Skill (build it from a `skill_market_skills_list` result), or `legacy:<chainId>:<decimal uint160 of the Chip address>`. The Skill itself, duplicates, and ids the market does not currently list are refused; `RELATED_SKILL_NOT_LISTED` names the ids to drop or correct.
 
-"Referenced By" is not writable. It is derived: every Skill you list shows yours under its Referenced By, and yours shows every Skill whose owner lists it. Do not try to set it through presentation, documents, or any other field.
+"Referenced By" is not writable. It is derived: each Related Skill selected for the managed Skill shows the managed Skill under its Referenced By. The managed Skill shows every Skill whose owner lists it. Do not try to set it through presentation, documents, or any other field.
 
 ## Buyer
 

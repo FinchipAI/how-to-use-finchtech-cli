@@ -1,6 +1,48 @@
 # Native MCP setup
 
-Use the section for the application the user is connecting. These are operational examples, not an allowlist. Check the installed client's help when its commands differ. Keep existing model/provider and unrelated MCP settings when editing configuration.
+## Runtime and wallet custody
+
+Before a new connection, recovery after losing an execution environment, or reuse of a browser wallet, establish where the CLI will run and which account the Human intends to use. Explain the relevant choice in the Human's language, then follow the corresponding route. Read available host and storage information first; reuse choices the Human has already confirmed.
+
+### A durable place to run the CLI
+
+CLI-MCP needs a host that can execute Finch CLI and securely preserve its wallet and unfinished-operation records across conversations, process exits and restarts. The computer need not run continuously. A remote host is suitable when its protected state remains available or can be securely restored before the next action.
+
+A plain web or mobile chat, a Remote MCP connector, and remembered conversation text do not by themselves provide that host. A disposable sandbox whose local files disappear after each run is unsuitable for creating or funding a wallet. An ephemeral process can use durable, protected storage, but establish that storage and recovery path before wallet setup. If the current chat can reach a suitable persistent Agent host, run the CLI there; a phone may be the interface to that host.
+
+When no suitable host is available, explain the missing execution or storage capability and offer a persistent host or the browser workflow below. Preserve the original wallet identity when recovering an environment; a replacement wallet can mean a different Finch Account. Keep private keys, CLI state and recovery journals in protected storage, and let the native MCP client retain its own OAuth credentials.
+
+### The Agent's wallet and budget
+
+The recommended CLI-MCP account uses a dedicated wallet controlled by the Agent, separate from the Human's everyday wallet. Explain this before asking for the wallet choice. When a new wallet is appropriate, follow the explicit wallet-creation decision in [Shared authority and setup](../SKILL.md#shared-authority-and-setup); an existing Agent wallet can be reused.
+
+The Human may allocate the Agent's spending budget by funding that dedicated wallet as needed. Separating the wallets limits the assets exposed to that Agent's wallet control. The Agent must continue protecting an empty wallet: its key also controls the Finch Account and its owned resources. A top-up supplies a budget; the Agent follows the Human's instructions and the market's approval rules for each business action.
+
+During normal setup, the Agent requests the full advertised MCP business permissions so the Agent can operate its own account. Restricted permissions are an advanced choice when the Human asks for a narrower role; follow the existing [connection permission policy](../SKILL.md#login-and-mcp-connection). OAuth permissions, possession of the wallet, and the Human's approval of a specific action remain distinct.
+
+### An existing MetaMask or other browser wallet
+
+A wallet being connected on Finch's website does not connect that wallet to Finch CLI or authorize the Agent's MCP client. Browser extensions keep their signing keys in the browser wallet; CLI-MCP uses the wallet held by the CLI. Browser login and MCP authorization pages do not transfer that key.
+
+For an Agent working in the Human's existing website account, prefer the browser-automation route below. Reusing the exact same exportable EOA in CLI-MCP is an additional path explicitly chosen by the Human: the Human exports that account's private key through the wallet's official interface into a protected local file on the CLI host, then the Agent uses the official `finch wallet use --file <PATH>` import. Obtain the Human's explicit choice before moving the key. Keep the key out of chat, screenshots and command arguments, and follow [Wallet bootstrap and CLI health](../SKILL.md#wallet-bootstrap-and-cli-health) for existing state and account switching.
+
+Explain why importing the Human's everyday wallet is discouraged: exporting and moving its key creates another custody location and gives the Agent control of that wallet's existing assets. Recommend the dedicated Agent wallet and a budget allocated by the Human instead. An account visible in an extension is not necessarily an exportable EOA; hardware, smart-contract and other non-exportable accounts need their supported workflow. Never treat an unsupported import as permission to replace the intended account.
+
+### Choose who is acting in which account
+
+| Intended use | Route |
+| --- | --- |
+| Agent uses its dedicated Finch account | CLI on the durable host plus the current Agent client's native Remote MCP connection. |
+| Agent acts in the Human's existing Finch account | The Agent's supported browser automation in the Human's logged-in browser; retain the browser wallet's normal signing and confirmation flow. |
+| Human temporarily uses the Agent's Finch account on the website | The CLI's browser-login handoff, following [Local Browser login](../SKILL.md#local-browser-login). |
+
+For browser automation, verify the intended website account and the requested action before continuing. A browser automation integration does not itself set up CLI custody or MCP authorization.
+
+For handoff, follow the local-host requirement in [Local Browser login](../SKILL.md#local-browser-login): the Agent runs the CLI on the Human's machine with a graphical browser it can open. The Agent checks its intended account and wallet, then opens the one-use confirmation page through the documented CLI command. The Human confirms the displayed account and uses the resulting website session; wallet keys remain on the Agent host. Wallet-signing actions still follow the original CLI custody flow. After temporary use, the Human signs out of the website to end that Web session; this does not disconnect the Agent's CLI-MCP connection. Report a cloud-host, headless-host or browser-opening limitation instead of copying the secret completion URL elsewhere.
+
+## Connect the current client
+
+Use the section for the application the Human is connecting after the runtime and wallet route above is established. These are operational examples, not an allowlist. Check the installed client's help when its commands differ. Keep existing model/provider and unrelated MCP settings when editing configuration.
 
 First verify `finch status`; create a wallet only with the user's explicit approval and log in with `finch login --chain-id <SUPPORTED_AUTH_CHAIN_ID>` if needed. Existing explicit approval in the conversation counts. Then follow the authorization fallbacks in SKILL.md in order. A command requiring interactive answers must stay in an interactive terminal; `finch mcp connect` captures a login command's output but does not answer its prompts.
 

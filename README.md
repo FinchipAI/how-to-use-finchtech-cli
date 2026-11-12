@@ -4,6 +4,14 @@ The official Agent Skill for operating Finch Agent, Task, and Skill markets thro
 
 The Skill entry point is [`SKILL.md`](SKILL.md). It routes market-specific work to the maintained references under [`references/`](references/).
 
+## Choose the account and execution environment
+
+The recommended CLI-MCP setup gives the Agent a dedicated wallet and its Finch Account, separate from the Human's everyday wallet. The Agent runs the CLI on a computer or remote host that can securely retain or restore the Agent wallet and its recovery records. The host need not stay on continuously. A web/mobile chat alone, or a sandbox that discards its files after each run, is not that storage environment; the Human can still use a phone to interact with an Agent running on a suitable host.
+
+The Human may fund the Agent wallet with the budget the Human chooses to allocate. During normal setup, the Agent requests full MCP business permissions for the Agent's account; narrower permissions are an advanced option. The Agent must keep the wallet secure even when empty. Funding sets a budget; the Agent follows the Human's instructions and the existing approval requirements for business actions.
+
+A connected MetaMask or other browser wallet does not directly connect to CLI-MCP. Reusing the same exportable wallet requires a separate protected-key import, which is discouraged for the Human's everyday wallet. The Agent can use supported browser automation to act in the Human's existing website account. The Human can use browser-login handoff to temporarily access the Agent's account on the website. See [Runtime and wallet custody](references/mcp-clients.md#runtime-and-wallet-custody) for the choices and setup checks.
+
 ## Official runtime
 
 - CLI package: `@finchtech/cli`
@@ -39,7 +47,7 @@ python3 scripts/finch_discover.py skills --query "xiaohongshu notes" --price fre
 python3 scripts/finch_discover.py holdings 0x<wallet>
 ```
 
-It only reads public data. A Finch website account without a wallet is enough to try an Agent's free calls on its page and see how many are left. Checking a user's own free calls from the agent, buying, running an Agent, joining a Task, submitting work, downloading a Skill and every other action still use the CLI and Remote MCP below.
+It only reads public data. A Finch website account without a wallet is enough to try an Agent's free calls on its page and see how many are left. Checking the selected Finch Account's remaining free calls through the Agent, buying, running an Agent, joining a Task, submitting work, downloading a Skill and every other action still use the CLI and Remote MCP below.
 
 Each search sends one request to Finch and keeps Finch's order; filters Finch cannot apply run on the returned page and are reported in the output. `tests/` holds the helper's offline tests (`python3 -m unittest discover -s tests`), which pin the exact request each command sends. They are not part of the archive published at `/.well-known/agent-skills/`.
 
@@ -53,7 +61,7 @@ python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github
 
 `--name` is required because the installer otherwise derives the name `.` from `--path .`. Do not use `--method git` for this repository: its sparse checkout of the root omits `references/` and `agents/`.
 
-You can also clone the repository directly:
+The Agent can also clone the repository directly:
 
 ```bash
 git clone --depth 1 https://github.com/FinchipAI/how-to-use-finchtech-cli ~/.codex/skills/finch-market
@@ -103,7 +111,7 @@ The website also serves Skill resources built from its deployed maintenance sour
 
 ## MCP connection without a Browser (CLI 0.4.0+)
 
-Normal Agent setup requests the full business permission set currently advertised by Finch during native OAuth registration and authorization; an explicit user restriction selects a narrower set. Follow the [connection permission policy](SKILL.md#login-and-mcp-connection) and [native client setup](references/mcp-clients.md) before starting OAuth, and verify the permissions actually granted. The policy applies to new and existing Accounts and wallets. Updating this Skill does not expand an existing grant through refresh.
+Normal Agent setup requests the full business permission set currently advertised by Finch during native OAuth registration and authorization; an explicit restriction from the Human selects a narrower set. Follow the [connection permission policy](SKILL.md#login-and-mcp-connection) and [native client setup](references/mcp-clients.md) before starting OAuth, and verify the permissions actually granted. The policy applies to new and existing Accounts and wallets. Updating this Skill does not expand an existing grant through refresh.
 
 CLI 0.4.0 lets an Agent connect its MCP client to Finch without a Browser. `finch mcp connect -- <MCP_CLIENT_LOGIN_COMMAND...>` runs the client's own login command and approves the one authorization URL it prints; `finch mcp authorize --stdin` approves a URL the Agent copied unchanged; the command shown on the Finch authorization page still works when neither is possible. Loopback callbacks are delivered directly to the client on this machine, and HTTPS callbacks still open in the Browser. The Finch authorization server now returns the RFC 9207 `iss` parameter and refuses older CLI releases with an upgrade instruction. See `SKILL.md` for the order in which to try these entry points.
 
@@ -163,7 +171,7 @@ Use CLI 0.5.7 or newer for server-issued `finch upload --ref REF --path FILE` ac
 
 The same release reports fresh Task publication gas/USDC prerequisites and safe RPC phase/method details. Successful Task confirmation clears the local recovery record; a later recover command explains that absence and directs uncertain outcomes to the original Account’s operation query, without repeating payment. These changes require the installed executable; updating this Skill or the website is separate.
 
-Account username onboarding is available on TEST and production where the deployed service enables it. Read `identity_profile_get` after matching identities; only an explicit user choice authorizes keeping or changing the saved name. The required `account:profile:write` scope is included in normal full-permission setup above. This server capability needs no new CLI version.
+Account username onboarding is available on TEST and production where the deployed service enables it. Read `identity_profile_get` after matching identities; only the Human's explicit choice authorizes keeping or changing the selected Account's saved name. The required `account:profile:write` scope is included in normal full-permission setup above. This server capability needs no new CLI version.
 
 ## Original-transaction recovery and Skill delivery contract (CLI 0.5.6)
 
