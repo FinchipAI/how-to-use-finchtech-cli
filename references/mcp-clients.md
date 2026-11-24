@@ -1,5 +1,20 @@
 # Native MCP setup
 
+## Human OAuth connection (Rail 2)
+
+Use this path for an Agent participating in Finch on behalf of the Human. Add the current deployment's `/mcp` Streamable HTTP URL through the client's native remote MCP settings and start OAuth. The browser opens Finch: the Human registers a Finch Account if needed or signs into an existing Account with an available Web method, reviews the named client, Account and permission groups, and clicks Authorize once or Deny. OAuth client registration registers the AI client; it does not create the Human's Finch Account. The Human does not need to install or run CLI.
+
+No CLI installation, matching CLI session, durable terminal or Human private key is needed. The client's MCP service must reach Finch; terminal sandbox networking is independent. Web/mobile support depends on that application's remote MCP/OAuth support. If unavailable, explain the client limitation without claiming setup succeeded.
+
+Call mounted `identity_actor_get` and verify `authRail: human_oauth`, intended Account/environment and granted scopes. Nullable wallet is valid; signing always requires the Human. Explain this in the Human's language. Do not run CLI login or import a browser wallet to repair this connection.
+
+Default Human authorization uses six permissions. Additional scopes within the registered ceiling need fresh Human consent, without re-registration. Permission groups are explanations, not multiple required clicks. Omitted registration scopes retain the complete supported ceiling; Rail 1 authorization defaults remain separate. Narrow existing registrations retain their ceilings; refresh preserves approved scopes.
+
+Account Settings lists effective connections and revokes the selected one. A successful token exchange replaces prior Human authorization for the same Account/client ID/environment, including old refresh and pending codes; cancellation or an unsuccessful exchange does not. Reconnecting one instance can disconnect others sharing that client ID. Distinct client IDs remain independent even with identical names. Reuse of an old rotated refresh closes its connection; restart native OAuth rather than repeatedly retrying it. The host owns serialized refresh and credential storage. Web logout preserves Rail 2; CLI logout and wallet changes revoke Rail 1 only. On an unknown business outcome read the original object before retrying. On HUMAN_ACTION_REQUIRED show the supplied website continuation; do not borrow a CLI wallet or instruct the Human to use CLI.
+
+The remaining runtime, CLI setup and CLI troubleshooting sections apply to Rail 1.
+
+
 ## Runtime and wallet custody
 
 Before a new connection, recovery after losing an execution environment, or reuse of a browser wallet, establish where the CLI will run and which account the Human intends to use. Explain the relevant choice in the Human's language, then follow the corresponding route. Read available host and storage information first; reuse choices the Human has already confirmed.
@@ -10,7 +25,7 @@ CLI-MCP needs a host that can execute Finch CLI and securely preserve its wallet
 
 A plain web or mobile chat, a Remote MCP connector, and remembered conversation text do not by themselves provide that host. A disposable sandbox whose local files disappear after each run is unsuitable for creating or funding a wallet. An ephemeral process can use durable, protected storage, but establish that storage and recovery path before wallet setup. If the current chat can reach a suitable persistent Agent host, run the CLI there; a phone may be the interface to that host.
 
-When no suitable host is available, explain the missing execution or storage capability and offer a persistent host or the browser workflow below. Preserve the original wallet identity when recovering an environment; a replacement wallet can mean a different Finch Account. Keep private keys, CLI state and recovery journals in protected storage, and let the native MCP client retain its own OAuth credentials.
+When no suitable host is available, explain the missing execution or storage capability and offer a persistent host, Rail 2 Human delegation above, or the browser workflow below. Preserve the original wallet identity when recovering an environment; a replacement wallet can mean a different Finch Account. Keep private keys, CLI state and recovery journals in protected storage, and let the native MCP client retain its own OAuth credentials.
 
 ### The Agent's wallet and budget
 
@@ -24,7 +39,7 @@ During normal setup, the Agent requests the full advertised MCP business permiss
 
 A wallet being connected on Finch's website does not connect that wallet to Finch CLI or authorize the Agent's MCP client. Browser extensions keep their signing keys in the browser wallet; CLI-MCP uses the wallet held by the CLI. Browser login and MCP authorization pages do not transfer that key.
 
-For an Agent working in the Human's existing website account, prefer the browser-automation route below. Reusing the exact same exportable EOA in CLI-MCP is an additional path explicitly chosen by the Human: the Human exports that account's private key through the wallet's official interface into a protected local file on the CLI host, then the Agent uses the official `finch wallet use --file <PATH>` import. Obtain the Human's explicit choice before moving the key. Keep the key out of chat, screenshots and command arguments, and follow [Wallet bootstrap and CLI health](../SKILL.md#wallet-bootstrap-and-cli-health) for existing state and account switching.
+For an Agent helping with the Human's existing Finch Account, use Rail 2 OAuth above; the browser wallet stays with the Human and no key export is needed. For website-only steps, use the website's normal signing/confirmation flow or supported browser automation. Exporting an EOA to CLI is not part of Rail 2 setup and must not be suggested as repair. A separately and explicitly chosen key import follows the official protected-file workflow and the existing wallet-recovery rules; it must never expose the key in chat, screenshots or command arguments.
 
 Explain why importing the Human's everyday wallet is discouraged: exporting and moving its key creates another custody location and gives the Agent control of that wallet's existing assets. Recommend the dedicated Agent wallet and a budget allocated by the Human instead. An account visible in an extension is not necessarily an exportable EOA; hardware, smart-contract and other non-exportable accounts need their supported workflow. Never treat an unsupported import as permission to replace the intended account.
 
@@ -33,7 +48,7 @@ Explain why importing the Human's everyday wallet is discouraged: exporting and 
 | Intended use | Route |
 | --- | --- |
 | Agent uses its dedicated Finch account | CLI on the durable host plus the current Agent client's native Remote MCP connection. |
-| Agent acts in the Human's existing Finch account | The Agent's supported browser automation in the Human's logged-in browser; retain the browser wallet's normal signing and confirmation flow. |
+| Agent acts on behalf of the Human in the Human Finch Account | Rail 2 Remote MCP with Finch Web registration/login and Human consent. The Human completes website signing or other required website steps. Supported browser automation is available for website-only interactions. |
 | Human temporarily uses the Agent's Finch account on the website | The CLI's browser-login handoff, following [Local Browser login](../SKILL.md#local-browser-login). |
 
 For browser automation, verify the intended website account and the requested action before continuing. A browser automation integration does not itself set up CLI custody or MCP authorization.

@@ -1,5 +1,11 @@
 # Agent Market
 
+## Authority Rail
+
+Rail 2 supports granted account reads, free allowances, existing purchased Calls and non-signing configuration. Runtime addresses and Direct contracts require agent_market:merchant:configuration:write; merchant:write alone is insufficient. Protected credential setup/delivery, buying, publishing, retiring and earnings signatures require the Human on the website. Preserve exact paid consent and original recovery.
+
+The CLI commands below apply to Rail 1. Never borrow a CLI wallet under Rail 2. Explain the relevant boundary in the Human's language.
+
 When a returned Agent avatar or input-file action uses `finch upload --ref REF --path FILE`, require CLI 0.5.7 or newer and the matching deployed server capability. Keep the returned reference, original file and Account for recovery; uploading is separate from saving a listing or invoking an Agent. These upload requirements do not change the older wallet-action minimums below.
 
 ## Chain identity

@@ -1,5 +1,11 @@
 # Skill Market
 
+## Authority Rail
+
+Rail 2 supports public discovery and permitted non-signing account/presentation reads and edits. Wallet ownership reads require a real bound wallet. Local packaging, protected delivery, uploads, purchases/conversions and publication signatures require the Human on the website.
+
+The CLI commands below apply to Rail 1. Never borrow a CLI wallet under Rail 2. Explain the relevant boundary in the Human's language.
+
 Source shape and content protection are independent choices. A Creator may publish one file or one directory using `plaintext`, `finchip_v2`, or `lit` when the selected deployment supports that mode. Never substitute a GitHub or arbitrary IPFS URL for a new local package.
 
 ## Current Skill gateway (CLI 0.5.6+)
