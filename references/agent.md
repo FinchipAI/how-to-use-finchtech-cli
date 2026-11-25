@@ -37,6 +37,8 @@ Before editing an existing Version, call `agent_market_merchant_version_configur
 
 ### Listing languages through Remote MCP
 
+Re-read `agent_market_merchant_version_configuration_get` before editing and after a save or conflict. Use the latest `draft` when present. For a greeting-only change, use `agent_market_merchant_welcome_message_replace` with the draft's `versionRevision` and `localizationRevision`, the authored locale, and the exact greeting text. For examples, use `agent_market_merchant_offer_examples_replace` with the selected `offerExamples` entry's `targetId`, `offerRevision` and `merchantRevision` (send it as `configRevision`). Start with `merchant` settings, not `override` or `effective`. Setting `useTestPrompt` to true intentionally makes the saved test input public. The examples endpoint accepts up to 400,000 JSON bytes, matching Studio.
+
 Use the mounted tools and their current input schemas. `agent_market_merchant_agent_create_with_initial_version` and `agent_market_merchant_version_create_additional` accept optional `localization` alongside the existing creation fields. `agent_market_merchant_listing_replace` saves a complete Agent listing for either `agenton_v2` or `direct_api_v1`, including localized `deliverable` and `serviceBoundary`. The existing Offer create/replace tools accept `localization` alongside the Offer's name, description and commercial configuration. Read the current revision before editing and retain one idempotency key for retries of an identical request.
 
 Supply `localization` inside the tool's request body, for example:
